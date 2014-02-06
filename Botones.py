@@ -10,6 +10,7 @@ class Botones(QtGui.QWidget):
 		# Elementos de la interfaz 
 		self._btnCargarImagen = QtGui.QPushButton('Cargar imagen', self)
 		self._btnAgregarLinea = QtGui.QPushButton('Agregar linea', self)
+		self._btnAgregarLinea.setEnabled(False)
 
 		# Contenedores para organizar la interfaz
 		botones = QtGui.QHBoxLayout() # contenedor

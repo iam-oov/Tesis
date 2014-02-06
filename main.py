@@ -125,6 +125,7 @@ class MainWindow(QtGui.QMainWindow):
 		self.actualizarCambios()
 
 	def actualizarCambios(self):
+		self.bot.btnAgregarLinea.setEnabled(True)
 		self.zoomMasAct.setEnabled(not self.tamanoVentanaAct.isChecked())
 		self.zoomMenosAct.setEnabled(not self.tamanoVentanaAct.isChecked())
 		self.tamanoNormalAct.setEnabled(not self.tamanoVentanaAct.isChecked())

@@ -1,0 +1,28 @@
+<datos>
+	<municipio nombre="santa catarina">
+		<fundacion>1992</fundacion>
+		<alcalde>Chuck Norris</alcalde>
+		<habitantes>101</habitantes>
+		<colonia nombre="santa marta" cp="1234"/>
+		<colonia nombre="martinez" cp="5678"/>
+		<colonia nombre="castillo" cp="9098"/>
+	</municipio>
+
+	<municipio nombre="monterrey">
+		<fundacion>1993</fundacion>
+		<alcalde>Adolf Hitler</alcalde>
+		<habitantes>102</habitantes>
+		<colonia nombre="colonia1" cp="7654"/>
+		<colonia nombre="colonia2" cp="3211"/>
+		<colonia nombre="colonia3" cp="2345"/>
+	</municipio>
+
+	<municipio nombre="escobedo">
+		<fundacion>1994</fundacion>
+		<alcalde>conejo de pascua</alcalde>
+		<habitantes>103</habitantes>
+		<colonia nombre="colonia4" cp="6789"/>
+		<colonia nombre="colonia5" cp="0987"/>
+		<colonia nombre="colonia6" cp="6543"/>
+	</municipio>
+</datos>

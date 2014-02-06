@@ -1,0 +1,166 @@
+<crecimiento>
+	<doicofacial>
+		<tejidosBlandos>
+			<labioInferiorDeLaLineaEstetica>
+				<proporcionDeTercioInferior>
+					<amentado>
+						<clases>
+							<clase name="Clase1 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase2 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase3 - maloclusionEsqueleticaYDental"></clase>
+						</clases>
+					</amentado>
+					<normal>
+						<clases>
+							<clase name="Clase1 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase2 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase3 - maloclusionEsqueleticaYDental"></clase>
+						</clases>
+					</normal>
+					<disminuido>
+						<clases>
+							<clase name="Clase1 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase2 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase3 - maloclusionEsqueleticaYDental"></clase>
+						</clases>
+					</disminuido>
+				</proporcionDeTercioInferior>
+			</labioInferiorDeLaLineaEstetica>
+			<profundidadDeFiltrum>
+				<proporcionDeTercioInferior>
+					<amentado>
+						<clases>
+							<clase name="Clase1 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase2 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase3 - maloclusionEsqueleticaYDental"></clase>
+						</clases>
+					</amentado>
+					<normal>
+						<clases>
+							<clase name="Clase1 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase2 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase3 - maloclusionEsqueleticaYDental"></clase>
+						</clases>
+					</normal>
+					<disminuido>
+						<clases>
+							<clase name="Clase1 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase2 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase3 - maloclusionEsqueleticaYDental"></clase>
+						</clases>
+					</disminuido>
+				</proporcionDeTercioInferior>
+			</profundidadDeFiltrum>
+		</tejidosBlandos>
+	</doicofacial>		
+
+	<mesiofacial>
+		<tejidosBlandos>
+			<labioInferiorDeLaLineaEstetica>
+				<proporcionDeTercioInferior>
+					<amentado>
+						<clases>
+							<clase name="Clase1 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase2 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase3 - maloclusionEsqueleticaYDental"></clase>
+						</clases>
+					</amentado>
+					<normal>
+						<clases>
+							<clase name="Clase1 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase2 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase3 - maloclusionEsqueleticaYDental"></clase>
+						</clases>
+					</normal>
+					<disminuido>
+						<clases>
+							<clase name="Clase1 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase2 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase3 - maloclusionEsqueleticaYDental"></clase>
+						</clases>
+					</disminuido>
+				</proporcionDeTercioInferior>
+			</labioInferiorDeLaLineaEstetica>
+			<profundidadDeFiltrum>
+				<proporcionDeTercioInferior>
+					<amentado>
+						<clases>
+							<clase name="Clase1 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase2 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase3 - maloclusionEsqueleticaYDental"></clase>
+						</clases>
+					</amentado>
+					<normal>
+						<clases>
+							<clase name="Clase1 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase2 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase3 - maloclusionEsqueleticaYDental"></clase>
+						</clases>
+					</normal>
+					<disminuido>
+						<clases>
+							<clase name="Clase1 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase2 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase3 - maloclusionEsqueleticaYDental"></clase>
+						</clases>
+					</disminuido>
+				</proporcionDeTercioInferior>
+			</profundidadDeFiltrum>
+		</tejidosBlandos>
+	</mesiofacial>
+
+	<branquifacial>
+		<tejidosBlandos>
+			<labioInferiorDeLaLineaEstetica>
+				<proporcionDeTercioInferior>
+					<amentado>
+						<clases>
+							<clase name="Clase1 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase2 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase3 - maloclusionEsqueleticaYDental"></clase>
+						</clases>
+					</amentado>
+					<normal>
+						<clases>
+							<clase name="Clase1 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase2 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase3 - maloclusionEsqueleticaYDental"></clase>
+						</clases>
+					</normal>
+					<disminuido>
+						<clases>
+							<clase name="Clase1 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase2 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase3 - maloclusionEsqueleticaYDental"></clase>
+						</clases>
+					</disminuido>
+				</proporcionDeTercioInferior>
+			</labioInferiorDeLaLineaEstetica>
+			<profundidadDeFiltrum>
+				<proporcionDeTercioInferior>
+					<amentado>
+						<clases>
+							<clase name="Clase1 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase2 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase3 - maloclusionEsqueleticaYDental"></clase>
+						</clases>
+					</amentado>
+					<normal>
+						<clases>
+							<clase name="Clase1 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase2 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase3 - maloclusionEsqueleticaYDental"></clase>
+						</clases>
+					</normal>
+					<disminuido>
+						<clases>
+							<clase name="Clase1 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase2 - maloclusionEsqueleticaYDental"></clase>
+							<clase name="Clase3 - maloclusionEsqueleticaYDental"></clase>
+						</clases>
+					</disminuido>
+				</proporcionDeTercioInferior>
+			</profundidadDeFiltrum>
+		</tejidosBlandos>
+	</branquifacial>
+</crecimiento>
