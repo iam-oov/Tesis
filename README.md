@@ -5,11 +5,12 @@ Herramienta para clasificar ímagenes para detectar por visión computacional el
 
 Requerimientos
 ==============
-Base de datos
+Base de datos:
+
     Hacer un programita que haga todas estas configuraciones
 
+Librerias python:
 
-Librerias python
     PyDes
     MySQLdb
   
