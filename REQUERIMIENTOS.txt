@@ -1,0 +1,12 @@
+REQUERIMIENTOS
+	
+	******** BASE DATOS
+		- Una base de datos llamada PACIENTES, en donde se llevara en control de los pacientes que ya fueron antendidos y ver sus resultados.
+
+		CREATE TABLE registros(id MEDIUMINT NOT NULL AUTO_INCREMENT, nombre CHAR(50), caso CHAR(50), PRIMARY KEY(id));
+
+
+	******** LIBRERIAS PYTHON
+		-PyDes
+		-MySQLdb
+

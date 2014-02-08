@@ -3,14 +3,33 @@ import sys
 from PySide import QtGui, QtCore
 
 from Botones import Botones
+from UTILERIAS.AdministradorArchivos import AdministradorArchivos
+import CONSTANTES
+
+
+class Conexion():
+    def obtenerConexion(self):
+    	ad = AdministradorArchivos()
+    	# desencriptamos el archivo de conexiones
+    	con = ad.desencriptaFichero('As05/4d0', #### PENDIENTE :: ENCRIPTAR ESTA PARTE ####
+    									CONSTANTES.rutaArchivo, 
+    									CONSTANTES.nombreArchivoCrenciales)
+    	arr_con = ad.parsearCadena(con)
+    	return arr_con
+
+
 
 class MainWindow(QtGui.QMainWindow):
 	def __init__(self):
 		super(MainWindow, self).__init__()
 
+		# Abrimos una conexion a la base de datos
+		co = Conexion() # instanciamos a la BD
+		arr_con = co.obtenerConexion() # traemos el arreglo de las credenciales
+
 		####### INSTANCIAMOS LAS CLASES DE LA INTERFAZ #######
 		# instanciamos los botones
-		self.bot = Botones()
+		self.bot = Botones(arr_con)
 		######################################################
 
 		self.zoom = 0.0
