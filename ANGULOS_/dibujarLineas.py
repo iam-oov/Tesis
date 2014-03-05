@@ -13,16 +13,16 @@ class Linea():
         x = self.p2[0]-self.p1[0]
         
         try:
-            m = (float(y)/float(x))
+            # m = (float(y)/float(x))
+            m = y/x
             return m
         except:
             return 0 
 
 
-class Principal(QtGui.QWidget):
-    
+class Ventana(QtGui.QWidget):
     def __init__(self):
-        super(Principal, self).__init__()
+        super(Ventana, self).__init__()
         self.pendientes = list()
         self.initUI()
         self._btnCargarImagen = QtGui.QPushButton('Calcular angulo', self)
@@ -68,7 +68,7 @@ class Principal(QtGui.QWidget):
         
 def main():
     app = QtGui.QApplication(sys.argv)
-    pri = Principal()
+    pri = Ventana()
     pri.showMaximized()
     sys.exit(app.exec_())
 

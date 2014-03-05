@@ -1,10 +1,96 @@
 # -*- coding: utf-8 *-*
 import sys
+import math
 from PySide import QtGui, QtCore
 
 from Botones import Botones
 from UTILERIAS.AdministradorArchivos import AdministradorArchivos
 import CONSTANTES
+
+def segmentos(p):
+	todos = []
+	primero = None
+	ultimo = None
+
+	for x in p:
+		if primero is None:
+			primero = x
+		
+		if ultimo is not None:
+			if x != ultimo:
+				todos.append((ultimo, x))
+		ultimo = x
+	return todos
+
+def unirPuntos(p0, p1):
+	yield p0
+	yield p1
+
+
+class Linea():
+	def __init__(self, s, p0, p1, color):
+		self.puntos = []
+		self.p0 = p0
+		self.p1 = p1
+
+		pe = QtGui.QPen(color)
+		br = QtGui.QBrush(color)
+		gr = (QtGui.QPen(QtCore.Qt.gray),)
+
+		# p0 <-> p1
+		s.addLine(*(p0+p1+gr))
+		self.union = list(segmentos(unirPuntos(p0, p1)))
+
+	def pendiente(self):
+		y = self.p1[1]-self.p0[1]
+		x = self.p1[0]-self.p0[0]
+
+		try:
+			m = (float(y)/float(x))
+			m = int(m*10)/10.0
+			return m
+		except:
+			return 0 
+
+
+class AreaDibujo(QtGui.QGraphicsScene):
+	def __init__(self):
+		QtGui.QGraphicsScene.__init__(self)
+		self.coordenadas = []
+		self.lineas = []
+
+	def mouseReleaseEvent(self, event):
+		calculados = list()
+		c = QtCore.Qt.red
+		x,y = event.scenePos().x(), event.scenePos().y()
+		self.coordenadas.append((x,y))
+		self.addEllipse(QtCore.QRectF(x-3, y-3, 6, 6), QtGui.QPen(c), QtGui.QBrush(c))
+		if len(self.coordenadas)==2:
+			self.coordenadas.append(c)
+			self.lineas.append(Linea(self, *self.coordenadas))
+			if len(self.lineas)>1:
+				for i,n in enumerate(self.lineas):
+					for j,m in enumerate(self.lineas):
+						if i != j:
+							if (i,j) not in calculados or (j,i) not in calculados:
+								# las lineas se cruzan?
+								if n.pendiente() != m.pendiente():
+									ang = self.obtenerAngulo(n.pendiente(), m.pendiente())
+									if ang<0:
+										ang+=180
+									ang = int(ang*10)/10.0
+									print ang
+									calculados.append((i,j))
+									calculados.append((j,i))
+			self.coordenadas = []
+
+	def obtenerAngulo(self, m1, m2):
+		try:
+			formula = (m2-m1)/(1+(m2*m1))
+			return math.degrees(math.atan(formula))
+		except:
+			return 0
+
 
 
 class Conexion():
@@ -43,7 +129,15 @@ class MainWindow(QtGui.QMainWindow):
 		self.desplazamientoArea = QtGui.QScrollArea()
 		self.desplazamientoArea.setBackgroundRole(QtGui.QPalette.Dark)
 		self.desplazamientoArea.setWidget(self.contenedorImagen)
- 
+ 		
+		self.scene = AreaDibujo()
+		self.scene.setSceneRect(QtCore.QRectF(0, 0, 300, 300))
+		# self.scene.addWidget(self.desplazamientoArea)
+		# self.scene.setBackgroundBrush(QtCore.Qt.blue)
+
+		self.view = QtGui.QGraphicsView(self.scene)
+		self.view.setRenderHint(QtGui.QPainter.Antialiasing)
+
 		self.crearAtajos()
 		self.crearMenus()
 		self.conexionesEventos()
@@ -56,7 +150,8 @@ class MainWindow(QtGui.QMainWindow):
 
 		divisor = QtGui.QSplitter(QtCore.Qt.Vertical)
 		divisor.addWidget(self.bot.wig)
-		divisor.addWidget(self.desplazamientoArea)
+		# divisor.addWidget(self.desplazamientoArea)
+		divisor.addWidget(self.view)
 
 		divisor.setSizes([50, 700])
 
@@ -111,9 +206,9 @@ class MainWindow(QtGui.QMainWindow):
 			imagen = QtGui.QImage(archivo)
 			if imagen.isNull():
 				QtGui.QMessageBox.information(self, "Aviso",
-							      "No se puede cargar %s." % archivo)
+							      "No se puede cargar el%s." % archivo)
 				return
- 
+ 			self.scene.addWidget(QtGui.QPixmap.fromImage(imagen))
 			self.contenedorImagen.setPixmap(QtGui.QPixmap.fromImage(imagen))
 			self.zoom = 1.0
  
