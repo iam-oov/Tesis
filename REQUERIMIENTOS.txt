@@ -1,9 +1,11 @@
 REQUERIMIENTOS
 	
 	******** BASE DATOS
-		- Una base de datos llamada PACIENTES, en donde se llevara en control de los pacientes que ya fueron antendidos y ver sus resultados.
+		- Una base de datos llamada X, en donde se llevara en control de los pacientes que ya fueron atendidos, historial y logg.
 
-		CREATE TABLE registros(id MEDIUMINT NOT NULL AUTO_INCREMENT, nombre CHAR(50), caso CHAR(50), PRIMARY KEY(id));
+		
+		CREATE TABLE casos(id int(6), nombre CHAR(30), apPaterno CHAR(30), apMaterno CHAR(30), telefono CHAR(30), ortodoncista CHAR(30), casoActual CHAR(50));
+		
 
 
 	******** LIBRERIAS PYTHON

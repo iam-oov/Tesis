@@ -1,12 +1,16 @@
 from CONEXION.BDCone import BDCone
 
-class Paciente():
+class Caso():
 	def __init__(self, con):
 		''' Campos de la tabla '''
-		self.nombreTabla = 'registros'
-		self.id = 0 # autoincrementable
+		self.nombreTabla = 'casos'
+		self.id = 0 
 		self.nombre = ''
-		self.caso = ''
+		self.apPaterno = ''
+		self.apMaterno = ''
+		self.telefono = ''
+		self.ortodoncista = ''
+		self.casoActual = ''
 		self.db = BDCone(con) # instanciamos la conexion
 	
 	def leer(self, columna):

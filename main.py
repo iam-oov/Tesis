@@ -148,7 +148,7 @@ class MainWindow(QtGui.QMainWindow):
 	def widgetPrincipal(self):
 		pestania = QtGui.QTabWidget()
 
-		divisor = QtGui.QSplitter(QtCore.Qt.Vertical)
+		divisor = QtGui.QSplitter(QtCore.Qt.Horizontal)
 		divisor.addWidget(self.bot.wig)
 		# divisor.addWidget(self.desplazamientoArea)
 		divisor.addWidget(self.view)
@@ -196,27 +196,32 @@ class MainWindow(QtGui.QMainWindow):
 	def conexionesEventos(self):
 		##### clase: Botones ####
 		self.bot.btnCargarImagen.clicked[bool].connect(self.abrir)
-		self.bot.btnAgregarLinea.clicked[bool].connect(self.agregar)
 
 	def abrir(self):
-		archivo = QtGui.QFileDialog.getOpenFileName(self, "Open File",
-							     QtCore.QDir.currentPath())
-		archivo = archivo[0]
-		if archivo: # validamos que haya escogido algo en el fileDialog
-			imagen = QtGui.QImage(archivo)
-			if imagen.isNull():
-				QtGui.QMessageBox.information(self, "Aviso",
-							      "No se puede cargar el%s." % archivo)
-				return
- 			self.scene.addWidget(QtGui.QPixmap.fromImage(imagen))
-			self.contenedorImagen.setPixmap(QtGui.QPixmap.fromImage(imagen))
-			self.zoom = 1.0
+		# archivo = QtGui.QFileDialog.getOpenFileName(self, "Open File",
+		# 					     QtCore.QDir.currentPath())
+		# archivo = archivo[0]
+		# if archivo: # validamos que haya escogido algo en el fileDialog
+		# 	imagen = QtGui.QImage(archivo)
+		# 	if imagen.isNull():
+		# 		QtGui.QMessageBox.information(self, "Aviso",
+		# 					      "No se puede cargar el%s." % archivo)
+		# 		return
+		if self.bot.imagen2!=None:
+			print 'Ruta:', self.bot.imagen2
+			###
+			# Se comentarizaron estas lineas porque tira error
+			###
+
+ 			# self.scene.addWidget(QtGui.QPixmap.fromImage(self.bot.imagen2))
+			# self.contenedorImagen.setPixmap(QtGui.QPixmap.fromImage(self.bot.imagen2))
+			# self.zoom = 1.0
  
-			self.tamanoVentanaAct.setEnabled(True)
-			self.actualizarCambios()
+			# self.tamanoVentanaAct.setEnabled(True)
+			# self.actualizarCambios()
  
-			if not self.tamanoVentanaAct.isChecked():
-				self.contenedorImagen.adjustSize()
+			# if not self.tamanoVentanaAct.isChecked():
+			# 	self.contenedorImagen.adjustSize()
 
 	def agregar(self):
 		print 'Agregar linea'

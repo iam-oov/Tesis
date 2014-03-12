@@ -1,7 +1,7 @@
 from PySide import QtCore, QtGui
   
 import easing_rc
-from ui_form imagesport Ui_Form
+from ui_form import Ui_Form
   
   
 class Animation(QtCore.QPropertyAnimation):
