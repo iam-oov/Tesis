@@ -1,6 +1,6 @@
 from CONEXION.BDCone import BDCone
 
-class Ortodoncista():
+class OrtodoncistaBD():
 	def __init__(self, con):
 		''' Campos de la tabla '''
 		self.nombreTabla = 'ortodoncista'
@@ -13,5 +13,5 @@ class Ortodoncista():
 
 	
 	def leer(self, columna):
-		query = 'SELECT '+columna+' FROM '+self.nombreTabla+' ORDER BY '+columna+' ASC'
+		query = 'SELECT '+columna+' FROM '+self.nombreTabla
 		return self.db.ejecutar(query)

@@ -33,11 +33,10 @@ class Botones(QtGui.QWidget):
 		self._btnCrearNuevoPaciente = QtGui.QPushButton('Crear nuevo paciente', self)
 		self.btnCrearNuevoPaciente.setEnabled(False)
 
-
 		# Este campo tiene que ser dinamico porque depende de los 
 		# pacientes que esten registrados.
+		self.__palabraDefault = 'Paciente...'
 		self._comboNombrePaciente = QtGui.QComboBox(self)
-		self.refrescarPacientes()
 
 		lblVacio = QtGui.QLabel(' ', self)
 
@@ -47,11 +46,7 @@ class Botones(QtGui.QWidget):
 		self.txtIdAgregar.setReadOnly(True)
 		self._comboNombrePacienteAgregar = QtGui.QComboBox(self)
 		self.comboNombrePacienteAgregar.addItem(self.__palabraDefault)
-		for p in pacientes:
-			# El valor que regresa es una tupla
-			# asi que tenemos que tomar unicamente el primer valor
-			p = p[0]
-			self.comboNombrePacienteAgregar.addItem(p)
+		self.refrescarPacientes()
 		lblOrtodoncistaAgregar = QtGui.QLabel('Ortodoncista: ')
 		self.__palabraDefaultOrtodoncista = 'Seleccione uno...'
 		self._comboOrtodoncistaAgregar = QtGui.QComboBox(self)
@@ -94,8 +89,8 @@ class Botones(QtGui.QWidget):
 		# CONTENEDORES ########################
 
 		botonesFijos = QtGui.QVBoxLayout() 
-		botonesFijos.addWidget(self.comboNombrePaciente)
 		botonesFijos.addWidget(self.btnCargarImagen)
+		botonesFijos.addWidget(self.comboNombrePaciente)
 		botonesFijos.addWidget(self.btnVerHistorial)
 		botonesFijos.addStretch(1)
 
@@ -381,11 +376,16 @@ class Botones(QtGui.QWidget):
 
 	def refrescarPacientes(self):
 		self.comboNombrePaciente.clear()
-		self.comboNombrePaciente.addItem(self.__txtNombreDefault)
+		self.comboNombrePacienteAgregar.clear()
+		
+		self.comboNombrePaciente.addItem(self.__palabraDefault)
+		self.comboNombrePacienteAgregar.addItem(self.__palabraDefault)
+
 		datos = self.obtenerDatosXColumna(columna='nombre', tabla='paciente')
 		for i in datos:
 			i = i[0]
-			self.txtNombre.addItem(i)
+			self.comboNombrePaciente.addItem(i)
+			self.comboNombrePacienteAgregar.addItem(i)
 
 	@property
 	def comboCasoAgregar(self):

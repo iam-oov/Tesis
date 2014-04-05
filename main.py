@@ -3,8 +3,9 @@ import sys
 import math
 from PySide import QtGui, QtCore
 
-from Paciente import Paciente
 from Botones import Botones
+from Paciente import Paciente
+from Ortodoncista import Ortodoncista
 from UTILERIAS.AdministradorArchivos import AdministradorArchivos
 import CONSTANTES
 
@@ -117,6 +118,7 @@ class MainWindow(QtGui.QMainWindow):
 		# instanciamos los botones
 		self.bot = Botones(arr_con)
 		self.pac = Paciente(arr_con)
+		self.ort = Ortodoncista(arr_con)
 		######################################################
 
 		self.zoom = 0.0
@@ -141,8 +143,8 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.crearAtajos()
 		self.crearMenus()
-		self.conexionesEventos()
 		self.widgetPrincipal()
+		self.conexionesEventos()
 
 		self.setWindowTitle('Tesis v1.0')
 
@@ -189,10 +191,11 @@ class MainWindow(QtGui.QMainWindow):
  
 			if not self.tamanoVentanaAct.isChecked():
 				self.contenedorImagen.adjustSize()
-
-	def conexionesEventos(self):
 		##### clase: Botones ####
+		
+	def conexionesEventos(self):
 		self.bot.btnCargarImagen.clicked[bool].connect(self.cargar)
+		
 		self.pestania.currentChanged.connect(self.cambioTab)
 
 	def crearAtajos(self):
@@ -242,7 +245,7 @@ class MainWindow(QtGui.QMainWindow):
 		self.actualizarCambios()
 
 	def widgetPrincipal(self):
-		pestania = QtGui.QTabWidget()
+		self.pestania = QtGui.QTabWidget()
 
 		divisor = QtGui.QSplitter(QtCore.Qt.Horizontal)
 		divisor.addWidget(self.bot.wig)
@@ -252,12 +255,16 @@ class MainWindow(QtGui.QMainWindow):
 		divisor2 = QtGui.QSplitter(QtCore.Qt.Horizontal)
 		divisor2.addWidget(self.pac.wig)
 
+		divisor3 = QtGui.QSplitter(QtCore.Qt.Horizontal)
+		divisor3.addWidget(self.ort.wig)
+
 		divisor.setSizes([80, 500])
 
-		pestania.addTab(divisor, 'Diagnostico')
-		pestania.addTab(divisor2, 'Pacientes')
+		self.pestania.addTab(divisor, 'Diagnostico')
+		self.pestania.addTab(divisor2, 'Pacientes')
+		self.pestania.addTab(divisor3, 'Ortodoncistas')
 
-		self.setCentralWidget(pestania)
+		self.setCentralWidget(self.pestania)
 
 	def zoomImagen(self, valor):
 		self.zoom *= valor
