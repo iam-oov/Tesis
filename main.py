@@ -3,6 +3,7 @@ import sys
 import math
 from PySide import QtGui, QtCore
 
+from Paciente import Paciente
 from Botones import Botones
 from UTILERIAS.AdministradorArchivos import AdministradorArchivos
 import CONSTANTES
@@ -92,7 +93,6 @@ class AreaDibujo(QtGui.QGraphicsScene):
 			return 0
 
 
-
 class Conexion():
     def obtenerConexion(self):
     	ad = AdministradorArchivos()
@@ -116,6 +116,7 @@ class MainWindow(QtGui.QMainWindow):
 		####### INSTANCIAMOS LAS CLASES DE LA INTERFAZ #######
 		# instanciamos los botones
 		self.bot = Botones(arr_con)
+		self.pac = Paciente(arr_con)
 		######################################################
 
 		self.zoom = 0.0
@@ -130,13 +131,13 @@ class MainWindow(QtGui.QMainWindow):
 		self.desplazamientoArea.setBackgroundRole(QtGui.QPalette.Dark)
 		self.desplazamientoArea.setWidget(self.contenedorImagen)
  		
-		self.scene = AreaDibujo()
-		self.scene.setSceneRect(QtCore.QRectF(0, 0, 300, 300))
-		# self.scene.addWidget(self.desplazamientoArea)
-		# self.scene.setBackgroundBrush(QtCore.Qt.blue)
+		# self.scene = AreaDibujo()
+		# self.scene.setSceneRect(QtCore.QRectF(0, 0, 300, 300))
+		# # self.scene.addWidget(self.desplazamientoArea)
+		# # self.scene.setBackgroundBrush(QtCore.Qt.blue)
 
-		self.view = QtGui.QGraphicsView(self.scene)
-		self.view.setRenderHint(QtGui.QPainter.Antialiasing)
+		# self.view = QtGui.QGraphicsView(self.scene)
+		# self.view.setRenderHint(QtGui.QPainter.Antialiasing)
 
 		self.crearAtajos()
 		self.crearMenus()
@@ -145,18 +146,54 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.setWindowTitle('Tesis v1.0')
 
-	def widgetPrincipal(self):
-		pestania = QtGui.QTabWidget()
+	def abrir(self):
+		self.bot.abrir()
+		self.cargar()
 
-		divisor = QtGui.QSplitter(QtCore.Qt.Horizontal)
-		divisor.addWidget(self.bot.wig)
-		# divisor.addWidget(self.desplazamientoArea)
-		divisor.addWidget(self.view)
+	def actualizarCambios(self):
+		self.zoomMasAct.setEnabled(not self.tamanoVentanaAct.isChecked())
+		self.zoomMenosAct.setEnabled(not self.tamanoVentanaAct.isChecked())
+		self.tamanoNormalAct.setEnabled(not self.tamanoVentanaAct.isChecked())
 
-		divisor.setSizes([50, 700])
+	def ajustarDesplazamientoBarra(self, barra, valor):
+		barra.setValue(int(valor * barra.value()
+				       + ((valor - 1) * barra.pageStep()/2)))
 
-		pestania.addTab(divisor, 'Osvaldo Hinojosa')
-		self.setCentralWidget(pestania)
+	def cambioTab(self, indice):
+		if indice==0:
+			self.bot.actualizar()
+
+	def cargar(self):
+		# archivo = QtGui.QFileDialog.getOpenFileName(self, "Open File",
+		# 					     QtCore.QDir.currentPath())
+		# archivo = archivo[0]
+		# if archivo: # validamos que haya escogido algo en el fileDialog
+		# 	imagen = QtGui.QImage(archivo)
+		# 	if imagen.isNull():
+		# 		QtGui.QMessageBox.information(self, "Aviso",
+		# 					      "No se puede cargar el%s." % archivo)
+		# 		return
+
+		if self.bot.imagen!=None:
+			print 'Ruta:', self.bot.rutaImagen
+			###
+			# Se comentarizaron estas lineas porque tira error
+			###
+
+ 			# self.scene.addWidget(QtGui.QPixmap.fromImage(self.bot.imagen))
+			self.contenedorImagen.setPixmap(QtGui.QPixmap.fromImage(self.bot.imagen))
+			self.zoom = 1.0
+ 
+			self.tamanoVentanaAct.setEnabled(True)
+			self.actualizarCambios()
+ 
+			if not self.tamanoVentanaAct.isChecked():
+				self.contenedorImagen.adjustSize()
+
+	def conexionesEventos(self):
+		##### clase: Botones ####
+		self.bot.btnCargarImagen.clicked[bool].connect(self.cargar)
+		self.pestania.currentChanged.connect(self.cambioTab)
 
 	def crearAtajos(self):
 		self.abrirAct = QtGui.QAction("&Abrir...", self, 
@@ -193,45 +230,6 @@ class MainWindow(QtGui.QMainWindow):
 		self.menuBar().addMenu(self.menuArchivo)
 		self.menuBar().addMenu(self.menuVisualizacion)
 
-	def conexionesEventos(self):
-		##### clase: Botones ####
-		self.bot.btnCargarImagen.clicked[bool].connect(self.abrir)
-
-	def abrir(self):
-		# archivo = QtGui.QFileDialog.getOpenFileName(self, "Open File",
-		# 					     QtCore.QDir.currentPath())
-		# archivo = archivo[0]
-		# if archivo: # validamos que haya escogido algo en el fileDialog
-		# 	imagen = QtGui.QImage(archivo)
-		# 	if imagen.isNull():
-		# 		QtGui.QMessageBox.information(self, "Aviso",
-		# 					      "No se puede cargar el%s." % archivo)
-		# 		return
-		if self.bot.imagen2!=None:
-			print 'Ruta:', self.bot.imagen2
-			###
-			# Se comentarizaron estas lineas porque tira error
-			###
-
- 			# self.scene.addWidget(QtGui.QPixmap.fromImage(self.bot.imagen2))
-			# self.contenedorImagen.setPixmap(QtGui.QPixmap.fromImage(self.bot.imagen2))
-			# self.zoom = 1.0
- 
-			# self.tamanoVentanaAct.setEnabled(True)
-			# self.actualizarCambios()
- 
-			# if not self.tamanoVentanaAct.isChecked():
-			# 	self.contenedorImagen.adjustSize()
-
-	def agregar(self):
-		print 'Agregar linea'
-
-	def zoomMas(self):
-		self.zoomImagen(1.25)
-
-	def zoomMenos(self):
-		self.zoomImagen(0.8)
-
 	def tamanoNormal(self):
 		self.contenedorImagen.adjustSize()
 		self.zoom = 1.0
@@ -243,11 +241,23 @@ class MainWindow(QtGui.QMainWindow):
 			self.tamanoNormal()
 		self.actualizarCambios()
 
-	def actualizarCambios(self):
-		self.bot.btnAgregarLinea.setEnabled(True)
-		self.zoomMasAct.setEnabled(not self.tamanoVentanaAct.isChecked())
-		self.zoomMenosAct.setEnabled(not self.tamanoVentanaAct.isChecked())
-		self.tamanoNormalAct.setEnabled(not self.tamanoVentanaAct.isChecked())
+	def widgetPrincipal(self):
+		pestania = QtGui.QTabWidget()
+
+		divisor = QtGui.QSplitter(QtCore.Qt.Horizontal)
+		divisor.addWidget(self.bot.wig)
+		divisor.addWidget(self.desplazamientoArea)
+		# divisor.addWidget(self.view)
+
+		divisor2 = QtGui.QSplitter(QtCore.Qt.Horizontal)
+		divisor2.addWidget(self.pac.wig)
+
+		divisor.setSizes([80, 500])
+
+		pestania.addTab(divisor, 'Diagnostico')
+		pestania.addTab(divisor2, 'Pacientes')
+
+		self.setCentralWidget(pestania)
 
 	def zoomImagen(self, valor):
 		self.zoom *= valor
@@ -259,13 +269,12 @@ class MainWindow(QtGui.QMainWindow):
 		self.zoomMasAct.setEnabled(self.zoom < 3.0)
 		self.zoomMenosAct.setEnabled(self.zoom > 0.333)
 
-	def ajustarDesplazamientoBarra(self, barra, valor):
-		barra.setValue(int(valor * barra.value()
-				       + ((valor - 1) * barra.pageStep()/2)))
+	def zoomMas(self):
+		self.zoomImagen(1.25)
+
+	def zoomMenos(self):
+		self.zoomImagen(0.8)
 	
-
-
-
 
 if __name__ == '__main__':
 	app = QtGui.QApplication(sys.argv)

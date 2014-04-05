@@ -1,20 +1,23 @@
 
-from datetime import date
-import os
-
-from BASEDATOS.Caso import Caso
-from BASEDATOS.Ortodoncista import Ortodoncista
-from BASEDATOS.Historial import Historial
-
 from PySide import QtGui, QtCore
+
+import os
+from datetime import date
+
+from Caso import Caso
+from BASEDATOS.Paciente import Paciente
+from BASEDATOS.Historial import Historial
+from BASEDATOS.Ortodoncista import Ortodoncista
+
+from UTILERIAS.AdministradorArchivos import AdministradorArchivos
+
 
 class Botones(QtGui.QWidget):
 	def __init__(self, arr_conexion):
 		super(Botones, self).__init__()
 
 		self.__arr_conexion = arr_conexion
-
-		self.wig = QtGui.QListWidget()
+		self.ca = Caso()
 
 		# Elementos de la interfaz 
 		self._btnCargarImagen = QtGui.QPushButton('Cargar imagen', self)
@@ -24,22 +27,17 @@ class Botones(QtGui.QWidget):
 		self.btnVerHistorial.setEnabled(False)
 		
 		self._btnProcesamiento = QtGui.QPushButton('Procesar imagen')
-		self._btnAgregarCasoAPaciente = QtGui.QPushButton('Agregar a paciente', 
-																self)
-		self._btnCrearNuevoPaciente = QtGui.QPushButton('Crear nuevo paciente', 
-																self)
+		self._btnAgregarCasoAPaciente = QtGui.QPushButton('Agregar a paciente', self)
+		self.btnAgregarCasoAPaciente.setEnabled(False)
+
+		self._btnCrearNuevoPaciente = QtGui.QPushButton('Crear nuevo paciente', self)
+		self.btnCrearNuevoPaciente.setEnabled(False)
+
 
 		# Este campo tiene que ser dinamico porque depende de los 
 		# pacientes que esten registrados.
 		self._comboNombrePaciente = QtGui.QComboBox(self)
-		pacientes = self.obtenerDatosXColumna_C('nombre') # nombre de la columna
-		self.__palabraDefault = 'Nombre del paciente'
-		self.comboNombrePaciente.addItem(self.__palabraDefault)
-		for p in pacientes:
-			# El valor que regresa es una tupla
-			# asi que tenemos que tomar unicamente el primer valor
-			p = p[0]
-			self.comboNombrePaciente.addItem(p)
+		self.refrescarPacientes()
 
 		lblVacio = QtGui.QLabel(' ', self)
 
@@ -58,8 +56,8 @@ class Botones(QtGui.QWidget):
 		self.__palabraDefaultOrtodoncista = 'Seleccione uno...'
 		self._comboOrtodoncistaAgregar = QtGui.QComboBox(self)
 		self.comboOrtodoncistaAgregar.addItem(self.__palabraDefaultOrtodoncista)
-		nombres = self.obtenerDatosXColumna_O('nombre')
-		apPaternos = self.obtenerDatosXColumna_O('apPaterno')
+		nombres = self.obtenerDatosXColumna(columna='nombre', tabla='ortodoncista')
+		apPaternos = self.obtenerDatosXColumna(columna='apPaterno', tabla='ortodoncista')
 		for n,ap in zip(nombres, apPaternos):
 			n = n[0]
 			ap = ap[0]
@@ -67,10 +65,16 @@ class Botones(QtGui.QWidget):
 		lblComentarioAgregar = QtGui.QLabel('Comentario: ')
 		self._txtComentarioAgregar = QtGui.QLineEdit(self)
 		lblCasoAgregar = QtGui.QLabel('Caso: ')
-		self._txtCasoAgregar = QtGui.QLineEdit(self)
+		self.__palabraDefaultCaso = 'Seleccione uno...'
+		self._comboCasoAgregar = QtGui.QComboBox(self)
+		self.comboCasoAgregar.addItem(self.__palabraDefaultCaso)
+		
+		for i in self.ca.casos:
+			self.comboCasoAgregar.addItem(i)
+
 		self._btnOkAgregar = QtGui.QPushButton('Aceptar', self)
 
-		# acciones secunadior del boton '_btnCrearNuevoPaciente'
+		# acciones secundario del boton '_btnCrearNuevoPaciente'
 		lblIdCrear = QtGui.QLabel('Id: ')
 		self._txtIdCrear = QtGui.QLineEdit(self)
 		lblNombrePacienteCrear = QtGui.QLabel('Nombre del paciente: ')
@@ -84,7 +88,7 @@ class Botones(QtGui.QWidget):
 		lblOrtodoncistaCrear = QtGui.QLabel('Ortodoncista: ')
 		self._combotOrtodoncistaCrear = QtGui.QComboBox(self)
 		lblCasoCrear = QtGui.QLabel('Caso: ')
-		self._txtCasoCrear = QtGui.QLineEdit(self)
+		self._comboCasoCrear = QtGui.QComboBox(self)
 		self._btnOkCrear = QtGui.QPushButton('Aceptar', self)
 
 		# CONTENEDORES ########################
@@ -93,6 +97,7 @@ class Botones(QtGui.QWidget):
 		botonesFijos.addWidget(self.comboNombrePaciente)
 		botonesFijos.addWidget(self.btnCargarImagen)
 		botonesFijos.addWidget(self.btnVerHistorial)
+		botonesFijos.addStretch(1)
 
 		opcionesGenerales = QtGui.QGroupBox('Opciones genereales')
 		opcionesGenerales.setLayout(botonesFijos)
@@ -104,7 +109,7 @@ class Botones(QtGui.QWidget):
 		
 		self._imagenCargada = QtGui.QGroupBox('Imagen cargada...')
 		self.imagenCargada.setLayout(botonImprovistoCargarImagen)
-		self.__estadoCargar = True
+		self.__estadoCargar = False
 		self.imagenCargada.setVisible(self.__estadoCargar)
 
 		botonImprovistoAgregar = QtGui.QVBoxLayout()
@@ -114,7 +119,7 @@ class Botones(QtGui.QWidget):
 		botonImprovistoAgregar.addWidget(lblOrtodoncistaAgregar)
 		botonImprovistoAgregar.addWidget(self.comboOrtodoncistaAgregar)
 		botonImprovistoAgregar.addWidget(lblCasoAgregar)
-		botonImprovistoAgregar.addWidget(self.txtCasoAgregar)
+		botonImprovistoAgregar.addWidget(self.comboCasoAgregar)
 		botonImprovistoAgregar.addWidget(lblComentarioAgregar)
 		botonImprovistoAgregar.addWidget(self.txtComentarioAgregar)
 		botonImprovistoAgregar.addWidget(self.btnOkAgregar)
@@ -138,7 +143,7 @@ class Botones(QtGui.QWidget):
 		botonImprovistoCrear.addWidget(lblOrtodoncistaCrear)
 		botonImprovistoCrear.addWidget(self.comboOrtodoncistaCrear)
 		botonImprovistoCrear.addWidget(lblCasoCrear)
-		botonImprovistoCrear.addWidget(self.txtCasoCrear)
+		botonImprovistoCrear.addWidget(self.comboCasoCrear)
 		botonImprovistoCrear.addWidget(self.btnOkCrear)
 
 		self._imagenCrear = QtGui.QGroupBox('Nuevo paciente')
@@ -152,46 +157,32 @@ class Botones(QtGui.QWidget):
 		union.addWidget(self.imagenCargada)
 		union.addWidget(self.imagenAgregar)
 		union.addWidget(self.imagenCrear)
+		union.addStretch(1)
 
+		self.wig = QtGui.QListWidget()
 		self.wig.setLayout(union)
 
 		self.inicializar()
 		self.conexionesEventos()
 
-	def inicializar(self):
-		self.imagen2 = None
+	def abrir(self):
+		archivo = QtGui.QFileDialog.getOpenFileName(self, "Open File",
+							     QtCore.QDir.currentPath())
+		archivo = archivo[0]
+		if archivo: # validamos que haya escogido algo en el fileDialog
+			imagen = QtGui.QImage(archivo)
+			if imagen.isNull():
+				QtGui.QMessageBox.information(self, "Aviso",
+							      "No se puede cargar el %s." % archivo)
+				return
+			self.imagen = imagen
+			self.rutaImagen = archivo
+			self.actualizarComponente()
+			self.btnAgregarCasoAPaciente.setEnabled(False)
+			self.btnCrearNuevoPaciente.setEnabled(False)
 
-	def conexionesEventos(self):
-		self.comboNombrePaciente.currentIndexChanged.connect(self.cambioPaciente)
-		self.btnCargarImagen.clicked[bool].connect(self.abrir)
-		self.btnAgregarCasoAPaciente.clicked[bool].connect(self.agregarCasoAPaciente)
-		self.btnCrearNuevoPaciente.clicked[bool].connect(self.crearNuevoPaciente)
-		self.comboNombrePacienteAgregar.currentIndexChanged.connect(self.cambioNombrePacienteAgregar)
-		self.comboOrtodoncistaAgregar.currentIndexChanged.connect(self.cambioOrtodoncistaAgregar)
-		self.btnOkAgregar.clicked[bool].connect(self.okAgregar)
-
-	def obtenerDatosXColumna_C(self, columna):
-		p = Caso(self.__arr_conexion)
-		lista = p.leer(columna) 
-		return lista
-
-	def obtenerDatosXColumna_O(self, columna):
-		p = Ortodoncista(self.__arr_conexion)
-		lista = p.leer(columna)
-		return lista
-
-	def cambioPaciente(self, nuevoValor):
-		try:
-			self.valorComboPaciente = \
-								str(self.comboNombrePaciente.currentText())
-		except:
-			self.valorComboPaciente = \
-								unicode(self.comboNombrePaciente.currentText())
-
-		if self.valorComboPaciente!=self.__palabraDefault:
-			self.btnVerHistorial.setEnabled(True)
-		else:
-			self.btnVerHistorial.setEnabled(False)
+	def actualizar(self):
+		self.refrescarPacientes()
 
 	def actualizarComponente(self):
 		if not self.__estadoCargar:
@@ -200,18 +191,36 @@ class Botones(QtGui.QWidget):
 			self.__estadoCargar = False
 		self.imagenCargada.setVisible(self.__estadoCargar)
 
-	def limpiarCampos(self):
-		self.txtIdAgregar.clear()
-		self.comboNombrePacienteAgregar.setCurrentIndex(0)
-		self.comboOrtodoncistaAgregar.setCurrentIndex(0)
-		self.txtComentarioAgregar.clear()
-		self.txtIdCrear.clear()
-		self.txtNombrePacienteCrear.clear()
-		self.txtPaterno.clear()
-		self.txtMaterno.clear()
-		self.txtTelefono.clear()
-		self.comboOrtodoncistaCrear.setCurrentIndex(0)
-		self.txtCasoCrear.clear()
+	def agregarBD(self, campos=''):
+		if campos=='Agregar':
+			x = self.obtenerDatosAnteriores()
+			if not x:
+				casoAnterior = None
+				rutaCasoAnterior = None
+			else:
+				casoAnterior = x[0]
+				rutaCasoAnterior = x[1]
+
+			id = int(self.txtIdAgregar.text())
+			casoNuevo = self.comboCasoAgregar.currentText()
+			rutaCasoNuevo = os.getcwd()
+			
+			hoy = date.today()
+			fecha = str(hoy.year) +'/'+str(hoy.month)+'/'+str(hoy.day)
+			
+			ortodoncista = self.valorComboOrtodoncistaAgregar
+			comentario = self.txtComentarioAgregar.text()
+
+			self.agregarRegistro(
+				id, 
+				casoAnterior, 
+				casoNuevo, 
+				fecha, 
+				ortodoncista,
+				comentario,
+				rutaCasoAnterior,
+				rutaCasoNuevo
+				)
 
 	def agregarCasoAPaciente(self):
 		if not self.__estadoAgregar:
@@ -225,30 +234,20 @@ class Botones(QtGui.QWidget):
 			self.limpiarCampos()
 		self.imagenAgregar.setVisible(self.__estadoAgregar)
 
-	def crearNuevoPaciente(self):
-		if not self.__estadoCrear:
-			self.__estadoCrear = True
-			self.btnCrearNuevoPaciente.setText('CANCELAR')
-			self.btnAgregarCasoAPaciente.setEnabled(not self.__estadoCrear)
-		else:
-			self.__estadoCrear = False
-			self.btnCrearNuevoPaciente.setText('Crear nuevo paciente')
-			self.btnAgregarCasoAPaciente.setEnabled(not self.__estadoCrear)
-			self.limpiarCampos()
-		self.imagenCrear.setVisible(self.__estadoCrear)
+	def agregarRegistro(self, *datos):
+		s = Historial(self.__arr_conexion)
+		s.id = datos[0]
+		s.casoAnterior = datos[1]
+		s.casoNuevo = datos[2]
+		s.fecha = datos[3]
+		s.ortodoncista = datos[4]
+		s.comentario = datos[5]
+		s.rutaCasoAnterior = datos[6]
+		s.rutaCasoNuevo = datos[7]
+		s.agregar()
 
-	def abrir(self):
-		archivo = QtGui.QFileDialog.getOpenFileName(self, "Open File",
-							     QtCore.QDir.currentPath())
-		archivo = archivo[0]
-		if archivo: # validamos que haya escogido algo en el fileDialog
-			imagen = QtGui.QImage(archivo)
-			if imagen.isNull():
-				QtGui.QMessageBox.information(self, "Aviso",
-							      "No se puede cargar el%s." % archivo)
-				return
-			self.imagen2 = imagen
-			self.actualizarComponente()
+	def asignarCasoAFormulario(self, caso):
+		self.comboCasoAgregar.setCurrentIndex(self.comboCasoAgregar.findText(caso))
 
 	def buscarId(self, paciente):
 		p = Caso(self.__arr_conexion)
@@ -270,72 +269,6 @@ class Botones(QtGui.QWidget):
 		else:
 			self.txtIdAgregar.clear()
 
-	def obtenerDatosAnteriores(self):
-		s = Historial(self.__arr_conexion)
-		datos = s.obtenerDatosAnteriores()
-		return datos
-
-	def agregarRegistro(self, *datos):
-		s = Historial(self.__arr_conexion)
-		s.id = datos[0]
-		s.casoAnterior = datos[1]
-		s.casoNuevo = datos[2]
-		s.fecha = datos[3]
-		s.ortodoncista = datos[4]
-		s.comentario = datos[5]
-		s.rutaCasoAnterior = datos[6]
-		s.rutaCasoNuevo = datos[7]
-		s.agregar()
-
-
-	def agregarBD(self, campos=''):
-		if campos=='Agregar':
-			x = self.obtenerDatosAnteriores()
-			if not x:
-				casoAnterior = None
-				rutaCasoAnterior = None
-			else:
-				casoAnterior = x[0]
-				rutaCasoAnterior = x[1]
-
-			id = int(self.txtIdAgregar.text())
-			casoNuevo = self.txtCasoAgregar.text()
-			rutaCasoNuevo = os.getcwd()
-			
-			hoy = date.today()
-			fecha = str(hoy.year) +'/'+str(hoy.month)+'/'+str(hoy.day)
-			
-			ortodoncista = self.valorComboOrtodoncistaAgregar
-			comentario = self.txtComentarioAgregar.text()
-
-			self.agregarRegistro(
-				id, 
-				casoAnterior, 
-				casoNuevo, 
-				fecha, 
-				ortodoncista,
-				comentario,
-				rutaCasoAnterior,
-				rutaCasoNuevo
-				)
-
-	def okAgregar(self):
-		# validar los campos
-		#	Que este seleccionados
-		if self.comboNombrePacienteAgregar!=self.__palabraDefault\
-			and self.comboOrtodoncistaAgregar!=self.__palabraDefaultOrtodoncista\
-			and len(self.txtCasoAgregar.text())!=0 and len(self.txtComentarioAgregar.text())!=0:
-			self.agregarBD(campos='Agregar')
-			self.comboNombrePacienteAgregar.setCurrentIndex(0)
-			self.txtCasoAgregar.clear()
-			self.txtComentarioAgregar.clear()
-
-		else:
-			MENSAJE ='No se pudo completar la operacion.\
-			\n1.- Asegurese de tener todos los campos completos.'
-			QtGui.QMessageBox.critical(self, 'CRITICAL ERROR', \
-										MENSAJE, QtGui.QMessageBox.Abort)
-
 	def cambioOrtodoncistaAgregar(self):
 		try:
 			self.valorComboOrtodoncistaAgregar = \
@@ -344,14 +277,119 @@ class Botones(QtGui.QWidget):
 			self.valorComboOrtodoncistaAgregar = \
 							unicode(self.comboOrtodoncistaAgregar.currentText())
 
+	def cambioPaciente(self, nuevoValor):
+		try:
+			self.valorComboPaciente = \
+								str(self.comboNombrePaciente.currentText())
+		except:
+			self.valorComboPaciente = \
+								unicode(self.comboNombrePaciente.currentText())
 
+		if self.valorComboPaciente!=self.__palabraDefault:
+			self.btnVerHistorial.setEnabled(True)
+		else:
+			self.btnVerHistorial.setEnabled(False)
 
+	def conexionesEventos(self):
+		self.comboNombrePaciente.currentIndexChanged.connect(self.cambioPaciente)
+		self.btnCargarImagen.clicked[bool].connect(self.abrir)
+		self.btnAgregarCasoAPaciente.clicked[bool].connect(self.agregarCasoAPaciente)
+		self.btnCrearNuevoPaciente.clicked[bool].connect(self.crearNuevoPaciente)
+		self.comboNombrePacienteAgregar.currentIndexChanged.connect(self.cambioNombrePacienteAgregar)
+		self.comboOrtodoncistaAgregar.currentIndexChanged.connect(self.cambioOrtodoncistaAgregar)
+		self.btnOkAgregar.clicked[bool].connect(self.okAgregar)
+		self.btnProcesamiento.clicked[bool].connect(self.procesar)
 
-			
+	def crearNuevoPaciente(self):
+		if not self.__estadoCrear:
+			self.__estadoCrear = True
+			self.btnCrearNuevoPaciente.setText('CANCELAR')
+			self.btnAgregarCasoAPaciente.setEnabled(not self.__estadoCrear)
+		else:
+			self.__estadoCrear = False
+			self.btnCrearNuevoPaciente.setText('Crear nuevo paciente')
+			self.btnAgregarCasoAPaciente.setEnabled(not self.__estadoCrear)
+			self.limpiarCampos()
+		self.imagenCrear.setVisible(self.__estadoCrear)
+
+	def inicializar(self):
+		self.imagen = None
+
+	def limpiarCampos(self):
+		self.txtIdAgregar.clear()
+		self.comboNombrePacienteAgregar.setCurrentIndex(0)
+		self.comboOrtodoncistaAgregar.setCurrentIndex(0)
+		self.txtComentarioAgregar.clear()
+		self.txtIdCrear.clear()
+		self.txtNombrePacienteCrear.clear()
+		self.txtPaterno.clear()
+		self.txtMaterno.clear()
+		self.txtTelefono.clear()
+		self.comboOrtodoncistaCrear.setCurrentIndex(0)
+
+	def obtenerDatosAnteriores(self):
+		s = Historial(self.__arr_conexion)
+		datos = s.obtenerDatosAnteriores()
+		return datos
+
+	def obtenerDatosXColumna(self, columna='', tabla=''):
+		if tabla=='paciente':
+			p = Paciente(self.__arr_conexion)
+			lista = p.leer(columna) 
+			return lista
+		elif tabla=='ortodoncista':
+			p = Ortodoncista(self.__arr_conexion)
+			lista = p.leer(columna)
+			return lista
+		
+	def obtenerNombreArchivo(self, ruta):
+		utl = AdministradorArchivos()
+		lista = utl.parsearCadena(ruta, separador='/')
+		return lista[-1]
+
+	def okAgregar(self):
+		# validar los campos
+		#	Que este seleccionados
+		if self.comboNombrePacienteAgregar!=self.__palabraDefault\
+			and self.valorComboOrtodoncistaAgregar!=self.__palabraDefaultOrtodoncista\
+			and len(self.comboCasoAgregar.currentText())!=self.__palabraDefaultCaso\
+			and len(self.txtComentarioAgregar.text())!=0:
+				self.agregarBD(campos='Agregar')
+				self.comboNombrePacienteAgregar.setCurrentIndex(0)
+				self.txtComentarioAgregar.clear()
+
+		else:
+			MENSAJE ='No se pudo completar la operacion.\
+			\n1.- Asegurese de tener todos los campos completos.'
+			QtGui.QMessageBox.critical(self, 'CRITICAL ERROR', \
+										MENSAJE, QtGui.QMessageBox.Abort)
+
+	def procesar(self):
+		nombre = self.obtenerNombreArchivo(self.rutaImagen)
+
+		MENSAJE='Desea procesar la imagen: "'+nombre+ '".'
+		reply = QtGui.QMessageBox.question(self, 'Message', MENSAJE, \
+						QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+		if reply==QtGui.QMessageBox.Yes:
+			caso = self.ca.seleccionarCaso()
+			# asignar a los campos de los formularios
+			self.asignarCasoAFormulario(caso)
+
+			# activar los botones de agregar a cliente
+			self.btnAgregarCasoAPaciente.setEnabled(True)
+			self.btnCrearNuevoPaciente.setEnabled(True)
+
+	def refrescarPacientes(self):
+		self.comboNombrePaciente.clear()
+		self.comboNombrePaciente.addItem(self.__txtNombreDefault)
+		datos = self.obtenerDatosXColumna(columna='nombre', tabla='paciente')
+		for i in datos:
+			i = i[0]
+			self.txtNombre.addItem(i)
 
 	@property
-	def txtCasoAgregar(self):
-		return self._txtCasoAgregar
+	def comboCasoAgregar(self):
+		return self._comboCasoAgregar
 
 	@property
 	def imagenCrear(self):
@@ -366,8 +404,8 @@ class Botones(QtGui.QWidget):
 		return self._combotOrtodoncistaCrear
 
 	@property
-	def txtCasoCrear(self):
-		return self._txtCasoCrear
+	def comboCasoCrear(self):
+		return self._comboCasoCrear
 
 	@property
 	def btnOkCrear(self):

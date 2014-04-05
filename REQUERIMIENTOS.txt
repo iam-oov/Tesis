@@ -4,7 +4,13 @@ REQUERIMIENTOS
 		- Una base de datos llamada X, en donde se llevara en control de los pacientes que ya fueron atendidos, historial y logg.
 
 		
-		CREATE TABLE casos(id int(6), nombre CHAR(30), apPaterno CHAR(30), apMaterno CHAR(30), telefono CHAR(30), ortodoncista CHAR(30), casoActual CHAR(50));
+		CREATE TABLE paciente(id int(6), nombre CHAR(30), apPaterno CHAR(30), apMaterno CHAR(30), telefono CHAR(30), ortodoncista CHAR(30), caso CHAR(30), casoActual CHAR(30), rutaImagen CHAR(30));
+
+		CREATE TABLE ortodoncista(nombre CHAR(30), apPaterno CHAR(30), apMaterno CHAR(30), telefono CHAR(15),  area CHAR(30));
+
+		CREATE TABLE historial(id int(6), casoAnterior CHAR(50), casoNuevo CHAR(50), fecha date, ortodoncista CHAR(30), comentario CHAR(30), rutaCasoAnterior CHAR(50), rutaCasoNuevo CHAR(50));	
+
+		CREATE TABLE log(id int(6), comentario CHAR(30));
 		
 
 
