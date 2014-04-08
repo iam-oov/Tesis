@@ -11,6 +11,8 @@ REQUERIMIENTOS
 		CREATE TABLE historial(id int(6), casoAnterior CHAR(50), casoNuevo CHAR(50), fecha date, ortodoncista CHAR(30), comentario CHAR(30), rutaCasoAnterior CHAR(50), rutaCasoNuevo CHAR(50));	
 
 		CREATE TABLE log(id int(6), comentario CHAR(30));
+
+		CREATE TABLE area(area CHAR(30));
 		
 
 

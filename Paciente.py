@@ -327,7 +327,6 @@ class Paciente(QtGui.QWidget):
 		f = self.listaR.currentRow()
 		c = self.listaR.currentColumn()
 		
-		columnaTipoFecha = [4]
 		columnasTipoNumero = [0]
 
 		try: # es para no marcar error cuando se elimina/agrega un registro
@@ -347,25 +346,6 @@ class Paciente(QtGui.QWidget):
 					else:
 						QtGui.QMessageBox.information(self, 'Information',\
 									 'No se hizo la modificacion. Dato invalido.')
-						# regresar al valor que tenia
-						it = QtGui.QTableWidgetItem()
-						it.setText(self.__valorOriginalTxt)
-						self.listaR.setItem(f, c, it)
-				elif c in columnaTipoFecha:
-					# print 'FECHA'
-					# 1999-12-31
-					if self.parsearFecha(valorCeldaClickeada):
-						lista = list()
-						for l in range(self.__columnas):
-							if l!=c:
-								lista.append(self.listaR.item(f, l).text())
-							else:
-								lista.append(self.__valorOriginalTxt)
-						self.actualizarRegistro(lista, c, valorCeldaClickeada)
-						self.ctrlZ.append([f, c, self.__valorOriginalTxt, valorCeldaClickeada])
-					else:
-						QtGui.QMessageBox.information(self, 'Information', 
-											'No se hizo la modificacion. Fecha invalida.')
 						# regresar al valor que tenia
 						it = QtGui.QTableWidgetItem()
 						it.setText(self.__valorOriginalTxt)

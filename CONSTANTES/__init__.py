@@ -12,4 +12,10 @@ columna1_PA = 'id'
 columna2_PA = 'nombre'
 columna3_PA = 'apPaterno'
 columna4_PA = 'apMaterno'
+columna5_PA = 'area'
+columna6_PA = 'telefono'
+
+ortodoncistaBD = 'ortodoncista'
+
+areaBD = 'area'
 

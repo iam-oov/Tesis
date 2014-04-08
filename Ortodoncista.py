@@ -1,6 +1,7 @@
 from PySide import QtGui, QtCore
 
 from BASEDATOS.OrtodoncistaBD import OrtodoncistaBD
+from BASEDATOS.AreaBD import AreaBD
 import CONSTANTES
 
 # leer las herramienta de la base de datos y 
@@ -35,20 +36,22 @@ class Ortodoncista(QtGui.QWidget):
 		self.__encabezados = ['Nombre', 'Ap. paterno', 'Ap. materno', 'Telefono', 'Area']
 		self._listaR = QtGui.QTableWidget(filas, self.__columnas)
 		self.listaR.setHorizontalHeaderLabels(self.__encabezados)
-		lista = self.obtenerDatosxColumna(columna='*', tabla='ortodoncista')
+		lista = self.obtenerDatosXColumna(columna='*', tabla='ortodoncista')
 		self.cargarDatos(lista)
 
-		lblNewNombre = QtGui.QLabel('Nombre: ', self)
+		lblNewNombre = QtGui.QLabel('Nombre*: ', self)
 		self._txtNewNombre = QtGui.QLineEdit(self)
-		lblNewPaterno = QtGui.QLabel('Ap. paterno: ', self)
+		lblNewPaterno = QtGui.QLabel('Ap. paterno*: ', self)
 		self._txtNewPaterno = QtGui.QLineEdit(self)
-		lblNewMaterno = QtGui.QLabel('Ap. materno: ', self)
+		lblNewMaterno = QtGui.QLabel('Ap. materno*: ', self)
 		self._txtNewMaterno = QtGui.QLineEdit(self)
-		lblNewTelefono = QtGui.QLabel('Telefono: ', self)
+		lblNewTelefono = QtGui.QLabel('Telefono*: ', self)
 		self._txtNewTelefono = QtGui.QLineEdit(self)
-		lblNewArea = QtGui.QLabel('Area: ', self)
+		lblNewArea = QtGui.QLabel('Area*: ', self)
 		self._comboNewArea = QtGui.QComboBox(self)
 	
+		self.cargarDatosArea()
+
 		####### contenedores
 		campoBotones = QtGui.QHBoxLayout()
 		campoBotones.addStretch(1)
@@ -67,7 +70,7 @@ class Ortodoncista(QtGui.QWidget):
 		campoImprovistoP1.addWidget(lblNewTelefono)
 		campoImprovistoP1.addWidget(self.txtNewTelefono)
 		campoImprovistoP1.addWidget(lblNewArea)
-		campoImprovistoP1.addWidget(self._comboNewArea)
+		campoImprovistoP1.addWidget(self.comboNewArea)
 		campoImprovistoP1.addStretch(1)
 		
 		camposImprovistoUnion = QtGui.QHBoxLayout()
@@ -133,8 +136,10 @@ class Ortodoncista(QtGui.QWidget):
 		self.inicializar()
 		self.conexionesEventos()
 
+	def actualizar():
+		self.cargarDatosArea()
+
 	def inicializar(self):
-		self.__valorId = ''
 		self.__valorNombre = ''
 		self.__valorPaterno = ''
 		self.__valorMaterno = ''
@@ -150,9 +155,9 @@ class Ortodoncista(QtGui.QWidget):
 		self.btnBuscar.clicked[bool].connect(self.buscar)
 		self.btnDeshacer.clicked[bool].connect(self.deshacer)
 		self.btnEliminar.clicked[bool].connect(self.eliminar)
+		self.comboArea.currentIndexChanged.connect(self.cambioComboArea)
 
-	def cambioId(self, nuevoTexto):
-		self.__valorId = nuevoTexto
+	def cambioComboArea(self):
 		self.actualizarTabla()
 
 	def cambioNombre(self, nuevoTexto):
@@ -167,15 +172,24 @@ class Ortodoncista(QtGui.QWidget):
 		self.__valorMaterno = nuevoTexto
 		self.actualizarTabla()
 	
-	def obtenerDatosxColumna(self, columna='', tabla='ortodoncista'):
-		re = OrtodoncistaBD(self.__arr_conexion)
-		lista = re.leer(columna)
-		return lista
+	def obtenerDatosXColumna(self, columna='', tabla=''):
+		if tabla==CONSTANTES.ortodoncistaBD:
+			re = OrtodoncistaBD(self.__arr_conexion)
+			lista = re.leer(columna)
+			return lista
+		elif tabla==CONSTANTES.areaBD:
+			re = AreaBD(self.__arr_conexion)
+			lista = re.leer(columna)
+			return lista
 
 	def crearCelda(self, var=''):
 		var = str(var)
 		item = QtGui.QTableWidgetItem()
 		item.setText(var)
+		return item
+
+	def noEditable(self, item):
+		item.setFlags(QtCore.Qt.ItemIsEnabled)
 		return item
 
 	def cargarDatos(self, datos):
@@ -186,8 +200,19 @@ class Ortodoncista(QtGui.QWidget):
 			self.listaR.setItem(indice, 1, self.crearCelda(campos[1]))
 			self.listaR.setItem(indice, 2, self.crearCelda(campos[2]))
 			self.listaR.setItem(indice, 3, self.crearCelda(campos[3]))
-			self.listaR.setItem(indice, 4, self.crearCelda(campos[4]))
+			self.listaR.setItem(indice, 4, self.noEditable(self.crearCelda(campos[4])))
 			self.numeroAnteriorFilas += 1
+
+	def cargarDatosArea(self):
+		self.comboArea.clear()
+		self.comboNewArea.clear()
+		self.comboArea.addItem(self.__txtDefaultArea)
+		self.comboNewArea.addItem(self.__txtDefaultArea)
+		datos = self.obtenerDatosXColumna(columna='area', tabla='area')
+		for i in datos:
+			i = i[0]
+			self.comboArea.addItem(i)
+			self.comboNewArea.addItem(i)
 
 	def generarId(self, nuevoNombre, nuevoPaterno, nuevoMaterno):
 		lp = self.recorte(ord(nuevoNombre[0]))
@@ -219,43 +244,32 @@ class Ortodoncista(QtGui.QWidget):
 		except:
 			return False
 
-	def orgnizarDato(self, dato):
-		# recibe: 01 - 01 - 2000
-		# y debe ser: 2000-01-01
-		dato = str(dato)
-		dato = dato.replace(' ', '').split('-')
-		largo = len(dato)-1
-
-		cadena = ''
-		for i in range(largo, (largo-largo)-1, -1):
-			cadena += dato[i]+'-'
-		cadena = cadena[:-1]
-		return cadena
-
 	def ok(self):
 		nuevoNombre = self.txtNewNombre.text()
 		nuevoPaterno = self.txtNewPaterno.text()
 		nuevoMaterno = self.txtNewMaterno.text()
-		nuevoId = self.generarId(nuevoNombre, nuevoPaterno, nuevoMaterno)
-		print 'Id generado:', nuevoId
 		nuevoTelefono = self.txtNewTelefono.text()
+		area = self.comboNewArea.currentText()
 
-		if self.validarDato(nuevoId):
-			# pegarle a la base de datos
-			self.agregarRegistro(nuevoId,
-					nuevoNombre,
-					nuevoPaterno,
-					nuevoMaterno,
-					nuevoTelefono,
-				)
-			QtGui.QMessageBox.information(self, 'Information',\
-									 'El Id para el Ortodoncista "'+nuevoNombre+'" es "'+str(nuevoId)+ '".')
-			self.actualizarTabla()
-			self.limpiarCampos(False)
-
+		# pegarle a la base de datos
+		if len(nuevoNombre)!=0 and len(nuevoPaterno)!=0\
+			 and len(nuevoMaterno)!=0 and area!=self.__txtDefaultArea:
+			if self.validarDato(nuevoTelefono):
+				self.agregarRegistro(
+						nuevoNombre,
+						nuevoPaterno,
+						nuevoMaterno,
+						nuevoTelefono,
+						area
+					)
+				self.actualizarTabla()
+				self.limpiarCampos(posicion="abajo")
+			else:
+				QtGui.QMessageBox.information(self, "Aviso",
+						"El campo 'telefono' no tiene formato valido")
 		else:
-			MENSAJE ='No se pudo completar la operacion.\n1.- Asegurese de haber agregado datos correctos.'
-			QtGui.QMessageBox.critical(self, 'CRITICAL ERROR', MENSAJE, QtGui.QMessageBox.Abort)
+			QtGui.QMessageBox.information(self, "Aviso",
+								      "Llene todos los campos.")
 
 	def ejecutarQuery(self, query):
 		re = OrtodoncistaBD(self.__arr_conexion)
@@ -267,36 +281,41 @@ class Ortodoncista(QtGui.QWidget):
 		coma = False
 		self.query = inicio
 
-		if len(self.__valorId)==0:
-			self.query = inicio
-		else:    
-			self.query += ' WHERE '+CONSTANTES.columna1_PA+ ' LIKE "%'+self.__valorId+'%"'+' ORDER BY '+CONSTANTES.columna1_PA
-			coma = True
+		# if len(self.__valorId)==0:
+		# 	self.query = inicio
+		# else:    
+		# 	self.query += ' WHERE '+CONSTANTES.columna1_PA+ ' LIKE "%'+self.__valorId+'%"'+' ORDER BY '+CONSTANTES.columna1_PA
+		# 	coma = True
 
-		if len(self.__valorNombre)!=0:
-			if coma:
-				self.query += ' AND '+CONSTANTES.columna2_PA+' LIKE "%'+self.__valorNombre+'%"'+' ORDER BY '+CONSTANTES.columna2_PA
-			else:    
-				self.query += ' WHERE '+CONSTANTES.columna2_PA+ ' LIKE "%'+self.__valorNombre+'%"'+' ORDER BY '+CONSTANTES.columna2_PA
-				coma = True
+		if len(self.__valorNombre)==0:
+			self.query = inicio
+		else:
+			self.query += ' WHERE '+CONSTANTES.columna2_PA+ ' LIKE "%'+self.__valorNombre+'%"'
+			coma = True
 
 		if len(self.__valorPaterno)!=0:
 			if coma:
-				self.query += ' AND '+CONSTANTES.columna3_PA+' LIKE "%'+self.__valorPaterno+'%"'+' ORDER BY '+CONSTANTES.columna3_PA
+				self.query += ' AND '+CONSTANTES.columna3_PA+' LIKE "%'+self.__valorPaterno+'%"'
 			else:    
-				self.query += ' WHERE '+CONSTANTES.columna3_PA+ ' LIKE "%'+self.__valorPaterno+'%"'+' ORDER BY '+CONSTANTES.columna3_PA
+				self.query += ' WHERE '+CONSTANTES.columna3_PA+ ' LIKE "%'+self.__valorPaterno+'%"'
 				coma = True
 
 		if len(self.__valorMaterno)!=0:
 			if coma:
-				self.query += ' AND '+CONSTANTES.columna4_PA+' LIKE "%'+self.__valorMaterno+'%"'+' ORDER BY '+CONSTANTES.columna4_PA
+				self.query += ' AND '+CONSTANTES.columna4_PA+' LIKE "%'+self.__valorMaterno+'%"'
 			else:    
-				self.query += ' WHERE '+CONSTANTES.columna4_PA+ ' LIKE "%'+self.__valorMaterno+'%"'+' ORDER BY '+CONSTANTES.columna4_PA
+				self.query += ' WHERE '+CONSTANTES.columna4_PA+ ' LIKE "%'+self.__valorMaterno+'%"'
+				coma = True
+
+		if self.comboArea.currentText()!=self.__txtDefaultArea:
+			if coma:
+				self.query += ' AND '+CONSTANTES.columna5_PA+' LIKE "%'+self.comboArea.currentText()+'%"'
+			else:    
+				self.query += ' WHERE '+CONSTANTES.columna5_PA+ ' LIKE "%'+self.comboArea.currentText()+'%"'
 				coma = True
 
 	def limpiarCampos(self, posicion="arriba"):
 		if posicion=="arriba":
-			self.txtId.clear()
 			self.txtNombre.clear()
 			self.txtPaterno.clear()
 			self.txtMaterno.clear()
@@ -305,6 +324,7 @@ class Ortodoncista(QtGui.QWidget):
 			self.txtNewPaterno.clear()
 			self.txtNewMaterno.clear()
 			self.txtNewTelefono.clear()
+			self.comboNewArea.setCurrentIndex(0)
 
 	def removerDatos(self):
 		self.listaR.clear()
@@ -317,9 +337,11 @@ class Ortodoncista(QtGui.QWidget):
 
 	def actualizarTabla(self):
 		self.armarQuery()
-		# print 'DEBUG:', self.query		
+		print 'DEBUG:', self.query		
 		# actualizamos la tabla
 		lista = self.ejecutarQuery(self.query)
+		print lista
+		print '-.-.-.-.-.'
 		# remover datos y actualizar
 		self.removerDatos()
 		self.removerFilas()
@@ -330,50 +352,15 @@ class Ortodoncista(QtGui.QWidget):
 		f = self.listaR.currentRow()
 		c = self.listaR.currentColumn()
 		
-		columnaTipoFecha = [4]
-		columnasTipoNumero = [0]
+		columnasTipoNumero = [3]
 
-		try: # es para no marcar error cuando se elimina/agrega un registro
-			valorCeldaClickeada = self.listaR.item(f,c).text()
-			if self.__valorOriginalTxt!=valorCeldaClickeada:
-				# validar que sea una modificacion valida
-				if c in columnasTipoNumero:
-					if self.validarDato(valorCeldaClickeada):
-						lista = list()
-						for l in range(self.__columnas):
-							if l!=c:
-								lista.append(self.listaR.item(f, l).text())
-							else:
-								lista.append(self.__valorOriginalTxt)
-						self.actualizarRegistro(lista, c, valorCeldaClickeada)
-						self.ctrlZ.append([f, c, self.__valorOriginalTxt, valorCeldaClickeada])
-					else:
-						QtGui.QMessageBox.information(self, 'Information',\
-									 'No se hizo la modificacion. Dato invalido.')
-						# regresar al valor que tenia
-						it = QtGui.QTableWidgetItem()
-						it.setText(self.__valorOriginalTxt)
-						self.listaR.setItem(f, c, it)
-				elif c in columnaTipoFecha:
-					# print 'FECHA'
-					# 1999-12-31
-					if self.parsearFecha(valorCeldaClickeada):
-						lista = list()
-						for l in range(self.__columnas):
-							if l!=c:
-								lista.append(self.listaR.item(f, l).text())
-							else:
-								lista.append(self.__valorOriginalTxt)
-						self.actualizarRegistro(lista, c, valorCeldaClickeada)
-						self.ctrlZ.append([f, c, self.__valorOriginalTxt, valorCeldaClickeada])
-					else:
-						QtGui.QMessageBox.information(self, 'Information', 
-											'No se hizo la modificacion. Fecha invalida.')
-						# regresar al valor que tenia
-						it = QtGui.QTableWidgetItem()
-						it.setText(self.__valorOriginalTxt)
-						self.listaR.setItem(f, c, it)
-				else:
+
+		# try: # es para no marcar error cuando se elimina/agrega un registro
+		valorCeldaClickeada = self.listaR.item(f,c).text()
+		if self.__valorOriginalTxt!=valorCeldaClickeada:
+			# validar que sea una modificacion valida
+			if c in columnasTipoNumero:
+				if self.validarDato(valorCeldaClickeada):
 					lista = list()
 					for l in range(self.__columnas):
 						if l!=c:
@@ -382,62 +369,61 @@ class Ortodoncista(QtGui.QWidget):
 							lista.append(self.__valorOriginalTxt)
 					self.actualizarRegistro(lista, c, valorCeldaClickeada)
 					self.ctrlZ.append([f, c, self.__valorOriginalTxt, valorCeldaClickeada])
-		except:
-			pass
+				else:
+					QtGui.QMessageBox.information(self, 'Information',\
+								 'No se hizo la modificacion. Dato invalido.')
+					# regresar al valor que tenia
+					it = QtGui.QTableWidgetItem()
+					it.setText(self.__valorOriginalTxt)
+					self.listaR.setItem(f, c, it)
+			else:
+				lista = list()
+				for l in range(self.__columnas):
+					if l!=c:
+						lista.append(self.listaR.item(f, l).text())
+					else:
+						lista.append(self.__valorOriginalTxt)
+				self.actualizarRegistro(lista, c, valorCeldaClickeada)
+				self.ctrlZ.append([f, c, self.__valorOriginalTxt, valorCeldaClickeada])
+		# except:
+		# 	pass
 
 	def agregarRegistro(self, *lista):
 		herr = OrtodoncistaBD(self.__arr_conexion)
-		
-		herr.id = lista[0]
-		herr.nombre = lista[1]
-		herr.apPaterno = lista[2]
-		herr.apMaterno = lista[3]
-		herr.telefono = lista[4]
+		herr.nombre = lista[0]
+		herr.apPaterno = lista[1]
+		herr.apMaterno = lista[2]
+		herr.telefono = lista[3]
+		herr.area = lista[4]
 		herr.agregar()
 
 	def eliminarRegistro(self, lista):
+		print lista
 		herr = OrtodoncistaBD(self.__arr_conexion)
-		
-		herr.id = lista[0]
-		herr.nombre = lista[1]
-		herr.apPaterno = lista[2]
-		herr.apMaterno = lista[3]
-		herr.telefono = lista[4]
-		herr.ortodoncista = ''
-		herr.casoActual = ''
-		herr.rutaImagen = ''
-
+		herr.nombre = lista[0]
+		herr.apPaterno = lista[1]
+		herr.apMaterno = lista[2]
+		herr.telefono = lista[3]
+		herr.area = lista[4]
 		herr.borrar()
-
-	def parsearFecha(self, cadena):
-		try:
-			(ano, mes, dia) = cadena.split("-")
-			if int(ano)>0 and int(mes)>0 and int(mes)<13 and int(dia)>0 and int(dia)<32:
-				return True
-			else:
-				return False
-		except:
-			return False
 
 	def actualizarRegistro(self, lista, c, nuevoValor):
 		emp = OrtodoncistaBD(self.__arr_conexion)
 		
 		nombreColumnasReales={
-			0:'id',
-			1:'nombre',
-			2:'apPaterno',
-			3:'apMaterno',
-			4:'fechaNacimiento',
-			5:'domicilio',
-			6:'telefono',
-			7:'celular'
+			0:CONSTANTES.columna2_PA,
+			1:CONSTANTES.columna3_PA,
+			2:CONSTANTES.columna4_PA,
+			3:CONSTANTES.columna6_PA,
+			4:CONSTANTES.columna5_PA
 		}
 		
 		columna = nombreColumnasReales[c]
-		emp.id = lista[0]
-		emp.nombre = lista[1]
-		emp.apPaterno = lista[2]
-		emp.apMaterno = lista[3]
+		emp.nombre = lista[0]
+		emp.apPaterno = lista[1]
+		emp.apMaterno = lista[2]
+		emp.telefono = lista[3]
+		emp.area = lista[4]
 		emp.actualizar(columna, nuevoValor)
 
 
@@ -481,23 +467,22 @@ class Ortodoncista(QtGui.QWidget):
 			QtGui.QMessageBox.information(self, 'Information', 'Ya no hay cambios que deshacer.')
 
 	def eliminar(self):
-		# try: # validar que halla seleccionado una celda
+		try: # validar que halla seleccionado una celda
 			lista = list()
 			for l in range(self.__columnas):
 				lista.append(self.listaR.item(self.valorCeldaPresionada[0], l).text())
-			MENSAJE="Desea eliminar el siguiente registro:\nId: "+\
+			MENSAJE="Desea eliminar el siguiente registro:\nNombre: "+\
 			self.listaR.item(self.valorCeldaPresionada[0], 0).text()+\
-			"\nNombre: "+self.listaR.item(self.valorCeldaPresionada[0], 1).text()+\
-			"\nAp. paterno: "+self.listaR.item(self.valorCeldaPresionada[0], 2).text()+\
-			"\nAp. materno: "+self.listaR.item(self.valorCeldaPresionada[0], 3).text()
+			"\nAp. paterno: "+self.listaR.item(self.valorCeldaPresionada[0], 1).text()+\
+			"\nAp. materno: "+self.listaR.item(self.valorCeldaPresionada[0], 2).text()
 			reply = QtGui.QMessageBox.question(self, 'Message', MENSAJE, \
 						QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
 			if reply==QtGui.QMessageBox.Yes:
 				self.eliminarRegistro(lista)
 				self.actualizarTabla()
-		# except:
-		# 	MENSAJE ='No se pudo completar la operacion.\n1.- Asegurese de haber seleccionado un Ortodoncista en la tabla.'
-		# 	QtGui.QMessageBox.critical(self, 'CRITICAL ERROR', MENSAJE, QtGui.QMessageBox.Abort)
+		except:
+			MENSAJE ='No se pudo completar la operacion.\n1.- Asegurese de haber seleccionado un Ortodoncista en la tabla.'
+			QtGui.QMessageBox.critical(self, 'CRITICAL ERROR', MENSAJE, QtGui.QMessageBox.Abort)
 
 
 
@@ -564,6 +549,12 @@ class Ortodoncista(QtGui.QWidget):
 	@property
 	def comboArea(self):
 		return self._comboArea
+
+	@property
+	def comboNewArea(self):
+		return self._comboNewArea
+
+	
 
 	
 

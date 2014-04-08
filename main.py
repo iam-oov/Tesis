@@ -3,6 +3,7 @@ import sys
 import math
 from PySide import QtGui, QtCore
 
+from Area import Area
 from Botones import Botones
 from Paciente import Paciente
 from Ortodoncista import Ortodoncista
@@ -119,6 +120,7 @@ class MainWindow(QtGui.QMainWindow):
 		self.bot = Botones(arr_con)
 		self.pac = Paciente(arr_con)
 		self.ort = Ortodoncista(arr_con)
+		self.are = Area(arr_con)
 		######################################################
 
 		self.zoom = 0.0
@@ -258,11 +260,15 @@ class MainWindow(QtGui.QMainWindow):
 		divisor3 = QtGui.QSplitter(QtCore.Qt.Horizontal)
 		divisor3.addWidget(self.ort.wig)
 
+		divisor4 = QtGui.QSplitter(QtCore.Qt.Horizontal)
+		divisor4.addWidget(self.are.wig)
+
 		divisor.setSizes([80, 500])
 
 		self.pestania.addTab(divisor, 'Diagnostico')
 		self.pestania.addTab(divisor2, 'Pacientes')
 		self.pestania.addTab(divisor3, 'Ortodoncistas')
+		self.pestania.addTab(divisor4, 'Areas')
 
 		self.setCentralWidget(self.pestania)
 
