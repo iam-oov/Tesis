@@ -1,6 +1,6 @@
 from CONEXION.BDCone import BDCone
 
-class Historial():
+class HistorialBD():
 	def __init__(self, con):
 		''' Campos de la tabla '''
 		self.nombreTabla = 'historial'
@@ -19,9 +19,14 @@ class Historial():
 		query = 'SELECT '+columna+' FROM '+self.nombreTabla+' ORDER BY '+columna+' ASC'
 		return self.db.ejecutar(query)
 
-	def obtenerDatosAnteriores(self):
-		query = 'SELECT casoAnterior, rutaCasoAnterior'+' FROM '+self.nombreTabla+\
-		' ORDER BY fecha ASC LIMIT 1'
+	def obtenerCasoAnterior(self, id):
+		query = 'SELECT casoNuevo, rutaCasoNuevo'+' FROM '+self.nombreTabla+\
+		' WHERE id="'+id+'" ORDER BY fecha DESC LIMIT 1'
+		return self.db.ejecutar(query)
+
+	def obtenerHistorial(self, id):
+		query = 'SELECT casoNuevo, rutaCasoNuevo'+' FROM '+self.nombreTabla+\
+		' WHERE id="'+id+'"'
 		return self.db.ejecutar(query)
 
 	def agregar(self):

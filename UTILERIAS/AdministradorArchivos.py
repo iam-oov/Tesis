@@ -25,6 +25,17 @@ class AdministradorArchivos():
 		cadena = cadena.split(separador)
 		return cadena
 
+	def eliminarUltimoCaracter(self, cadena):
+		''' Esta funcion elimina el ultimo elemento de la cadena recibida 
+		como parametro '''
+		cadena = cadena[:len(cadena)-1]
+		return cadena
+
+	def eliminarPrimerCaracter(self, cadena):
+		''' Esta funcion elimina el primer elemento de la cadena recibida 
+		como parametro '''
+		cadena = cadena[1:]
+		return cadena
 
 	def desencriptaFichero(self, contrasena, ruta, nombreArchivo):
 	    # abrimos el arhivo, lo guardamos en memoria y cerramos.

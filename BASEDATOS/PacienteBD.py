@@ -50,6 +50,11 @@ class PacienteBD():
 		query = 'SELECT '+columna+' FROM '+self.nombreTabla
 		return self.db.ejecutar(query)
 
+	def obtenerApellidos(self, nombre):
+		query = 'SELECT apPaterno, apMaterno FROM '+self.nombreTabla+' WHERE nombre="'+nombre+'"'
+		return self.db.ejecutar(query)		
+
 	def obtenerId(self, nombre):
 		query = 'SELECT id FROM '+self.nombreTabla+' WHERE nombre="'+nombre+'"'
 		return self.db.ejecutar(query)
+

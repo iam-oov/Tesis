@@ -9,7 +9,6 @@ class AreaBD():
 
 	def agregar(self):
 		query = 'INSERT INTO '+self.nombreTabla+ ' VALUES("'+self.area+'")'
-		print query
 		self.db.ejecutar(query)
 
 	def borrar(self):

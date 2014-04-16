@@ -106,7 +106,6 @@ class Conexion():
     	return arr_con
 
 
-
 class MainWindow(QtGui.QMainWindow):
 	def __init__(self):
 		super(MainWindow, self).__init__()
@@ -148,6 +147,7 @@ class MainWindow(QtGui.QMainWindow):
 		self.widgetPrincipal()
 		self.conexionesEventos()
 
+		self.setCentralWidget(self.pestania)
 		self.setWindowTitle('Tesis v1.0')
 
 	def abrir(self):
@@ -164,20 +164,16 @@ class MainWindow(QtGui.QMainWindow):
 				       + ((valor - 1) * barra.pageStep()/2)))
 
 	def cambioTab(self, indice):
-		if indice==0:
+		if indice==0: # diagnostico
 			self.bot.actualizar()
+		elif indice==1: # paciente
+			self.pac.actualizar()
+		elif indice==2: # ortodoncista
+			self.ort.actualizar()
+		elif indice==3: # area
+			self.are.actualizar()
 
 	def cargar(self):
-		# archivo = QtGui.QFileDialog.getOpenFileName(self, "Open File",
-		# 					     QtCore.QDir.currentPath())
-		# archivo = archivo[0]
-		# if archivo: # validamos que haya escogido algo en el fileDialog
-		# 	imagen = QtGui.QImage(archivo)
-		# 	if imagen.isNull():
-		# 		QtGui.QMessageBox.information(self, "Aviso",
-		# 					      "No se puede cargar el%s." % archivo)
-		# 		return
-
 		if self.bot.imagen!=None:
 			print 'Ruta:', self.bot.rutaImagen
 			###
@@ -197,7 +193,6 @@ class MainWindow(QtGui.QMainWindow):
 		
 	def conexionesEventos(self):
 		self.bot.btnCargarImagen.clicked[bool].connect(self.cargar)
-		
 		self.pestania.currentChanged.connect(self.cambioTab)
 
 	def crearAtajos(self):
@@ -252,6 +247,7 @@ class MainWindow(QtGui.QMainWindow):
 		divisor = QtGui.QSplitter(QtCore.Qt.Horizontal)
 		divisor.addWidget(self.bot.wig)
 		divisor.addWidget(self.desplazamientoArea)
+		divisor.setSizes([200, 500])
 		# divisor.addWidget(self.view)
 
 		divisor2 = QtGui.QSplitter(QtCore.Qt.Horizontal)
@@ -263,14 +259,10 @@ class MainWindow(QtGui.QMainWindow):
 		divisor4 = QtGui.QSplitter(QtCore.Qt.Horizontal)
 		divisor4.addWidget(self.are.wig)
 
-		divisor.setSizes([80, 500])
-
 		self.pestania.addTab(divisor, 'Diagnostico')
 		self.pestania.addTab(divisor2, 'Pacientes')
 		self.pestania.addTab(divisor3, 'Ortodoncistas')
 		self.pestania.addTab(divisor4, 'Areas')
-
-		self.setCentralWidget(self.pestania)
 
 	def zoomImagen(self, valor):
 		self.zoom *= valor
@@ -289,8 +281,11 @@ class MainWindow(QtGui.QMainWindow):
 		self.zoomImagen(0.8)
 	
 
+
 if __name__ == '__main__':
 	app = QtGui.QApplication(sys.argv)
 	mainWindow = MainWindow()
-	mainWindow.showMaximized()
+	mainWindow.resize(750, 700)
+	mainWindow.show()
+	# mainWindow.showMaximized()
 	sys.exit(app.exec_())

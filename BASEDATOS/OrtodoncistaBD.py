@@ -21,8 +21,6 @@ class OrtodoncistaBD():
 			self.telefono,
 			self.area
 			)
-		print query
-		print valores
 		return self.db.ejecutar(query, valores)
 
 	def agregar(self):

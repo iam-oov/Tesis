@@ -1,35 +1,27 @@
+
 from PySide import QtGui, QtCore
 
-from BASEDATOS.OrtodoncistaBD import OrtodoncistaBD
 from BASEDATOS.AreaBD import AreaBD
+from BASEDATOS.OrtodoncistaBD import OrtodoncistaBD
+from UTILERIAS.AdministradorArchivos import AdministradorArchivos
+
 import CONSTANTES
 
-# leer las herramienta de la base de datos y 
 
 class Ortodoncista(QtGui.QWidget):
 	def __init__(self, arr_con):
 		super(Ortodoncista, self).__init__()
 		self.__arr_conexion = arr_con
-		self.ctrlZ = list()
 
-		lblNombre = QtGui.QLabel('Nombre: ', self)
-		self._txtNombre = QtGui.QLineEdit(self)
-
-		lblPaterno = QtGui.QLabel('Ap. paterno: ')
-		self._txtPaterno = QtGui.QLineEdit(self)
-
-		lblMaterno = QtGui.QLabel('Ap. materno: ')
-		self._txtMaterno = QtGui.QLineEdit(self)
-
-		self.__txtDefaultArea = 'Seleccione un area...'
-		self._comboArea = QtGui.QComboBox(self)
-		self.comboArea.addItem(self.__txtDefaultArea)
-
-		self._btnDeshacer = QtGui.QPushButton('Deshacer', self)
+		self.util = AdministradorArchivos()
+		
 		self._btnAgregar = QtGui.QPushButton('Agregar ortodoncista', self)
-		self._btnBuscar = QtGui.QPushButton('Buscar ortodoncista', self)
 		self._btnEliminar = QtGui.QPushButton('Eliminar ortodoncista', self)
 		self._btnOk = QtGui.QPushButton('Ok', self)
+
+		self._txtBuscar = QtGui.QLineEdit()
+		self.txtBuscar.setPlaceholderText('Busqueda')
+		self.txtBuscar.setStyleSheet(CONSTANTES.campos)
 
 		filas = 0
 		self.__columnas = 5
@@ -39,39 +31,51 @@ class Ortodoncista(QtGui.QWidget):
 		lista = self.obtenerDatosXColumna(columna='*', tabla='ortodoncista')
 		self.cargarDatos(lista)
 
-		lblNewNombre = QtGui.QLabel('Nombre*: ', self)
-		self._txtNewNombre = QtGui.QLineEdit(self)
-		lblNewPaterno = QtGui.QLabel('Ap. paterno*: ', self)
-		self._txtNewPaterno = QtGui.QLineEdit(self)
-		lblNewMaterno = QtGui.QLabel('Ap. materno*: ', self)
-		self._txtNewMaterno = QtGui.QLineEdit(self)
-		lblNewTelefono = QtGui.QLabel('Telefono*: ', self)
-		self._txtNewTelefono = QtGui.QLineEdit(self)
-		lblNewArea = QtGui.QLabel('Area*: ', self)
-		self._comboNewArea = QtGui.QComboBox(self)
-	
+		self._txtNuevoNombre = QtGui.QLineEdit(self)
+		self.txtNuevoNombre.setPlaceholderText('* Nombre(s)')
+		self.txtNuevoNombre.setStyleSheet(CONSTANTES.campos)
+
+		self._txtNuevoPaterno = QtGui.QLineEdit(self)
+		self.txtNuevoPaterno.setPlaceholderText('* Ap. paterno')
+		self.txtNuevoPaterno.setStyleSheet(CONSTANTES.campos)
+
+		self._txtNuevoMaterno = QtGui.QLineEdit(self)
+		self.txtNuevoMaterno.setPlaceholderText('* Ap. materno')
+		self.txtNuevoMaterno.setStyleSheet(CONSTANTES.campos)
+		
+		lblNuevoTelefono = QtGui.QLabel('* Telefono:')
+		self._txtNuevoTelefono = QtGui.QLineEdit(self)
+		self.txtNuevoTelefono.setInputMask('+9999999999;_')
+		self.txtNuevoTelefono.setStyleSheet(CONSTANTES.campos)
+		
+		self.__txtDefaultArea = 'Seleccione una...'
+		lblNuevoArea = QtGui.QLabel('* Area:')
+		self._comboNuevoArea = QtGui.QComboBox(self)
 		self.cargarDatosArea()
 
-		####### contenedores
+		####### CONTENEDORES
+
 		campoBotones = QtGui.QHBoxLayout()
-		campoBotones.addStretch(1)
 		campoBotones.addWidget(self.btnAgregar)
-		campoBotones.addWidget(self.btnBuscar)
 		campoBotones.addWidget(self.btnEliminar)
-		campoBotones.addWidget(self.btnDeshacer)
+		campoBotones.addStretch(1)
+		campoBotones.addWidget(self.txtBuscar)
+
+		campoTelefono = QtGui.QHBoxLayout()
+		campoTelefono.addWidget(lblNuevoTelefono)
+		campoTelefono.addWidget(self.txtNuevoTelefono)
+
+		campoArea = QtGui.QHBoxLayout()
+		campoArea.addWidget(lblNuevoArea)
+		campoArea.addWidget(self.comboNuevoArea)
+		campoArea.addStretch(1)
 
 		campoImprovistoP1 = QtGui.QVBoxLayout()
-		campoImprovistoP1.addWidget(lblNewNombre)
-		campoImprovistoP1.addWidget(self.txtNewNombre)
-		campoImprovistoP1.addWidget(lblNewPaterno)
-		campoImprovistoP1.addWidget(self.txtNewPaterno)
-		campoImprovistoP1.addWidget(lblNewMaterno)
-		campoImprovistoP1.addWidget(self.txtNewMaterno)
-		campoImprovistoP1.addWidget(lblNewTelefono)
-		campoImprovistoP1.addWidget(self.txtNewTelefono)
-		campoImprovistoP1.addWidget(lblNewArea)
-		campoImprovistoP1.addWidget(self.comboNewArea)
-		campoImprovistoP1.addStretch(1)
+		campoImprovistoP1.addWidget(self.txtNuevoNombre)
+		campoImprovistoP1.addWidget(self.txtNuevoPaterno)
+		campoImprovistoP1.addWidget(self.txtNuevoMaterno)
+		campoImprovistoP1.addLayout(campoTelefono)
+		campoImprovistoP1.addLayout(campoArea)
 		
 		camposImprovistoUnion = QtGui.QHBoxLayout()
 		camposImprovistoUnion.addLayout(campoImprovistoP1)
@@ -90,38 +94,14 @@ class Ortodoncista(QtGui.QWidget):
 		unionAgregarEmpleado = QtGui.QVBoxLayout()
 		unionAgregarEmpleado.addWidget(cajaAgregarOrtodoncista)		
 
-		filtro = QtGui.QHBoxLayout()
-		filtro.addWidget(lblNombre)
-		filtro.addWidget(self.txtNombre)
-		filtro.addWidget(lblPaterno)
-		filtro.addWidget(self.txtPaterno)
-		filtro.addWidget(lblMaterno)
-		filtro.addWidget(self.txtMaterno)
-		filtro.addWidget(self.comboArea)
-
-		vert = QtGui.QVBoxLayout()
-		vert.addLayout(filtro)
-
-		cajaBuscar = QtGui.QGroupBox('Filtro')
-		cajaBuscar.setLayout(vert)
-
-		unionBuscarEmpleado = QtGui.QVBoxLayout()
-		unionBuscarEmpleado.addWidget(cajaBuscar)	
-
 		self._widgetAgregar = QtGui.QWidget()
 		self.widgetAgregar.setLayout(unionAgregarEmpleado)
 		self.estado = False
 		self.widgetAgregar.setVisible(self.estado)
 
-		self._widgetBuscar = QtGui.QWidget()
-		self.widgetBuscar.setLayout(unionBuscarEmpleado)
-		self.estadoBuscar = False
-		self.widgetBuscar.setVisible(self.estadoBuscar)
-
 		union = QtGui.QVBoxLayout()
 		union.addLayout(campoBotones)
 		union.addWidget(self.widgetAgregar)
-		union.addWidget(self.widgetBuscar)
 
 		cajaFiltro = QtGui.QGroupBox('Opciones')
 		cajaFiltro.setLayout(union)
@@ -136,41 +116,24 @@ class Ortodoncista(QtGui.QWidget):
 		self.inicializar()
 		self.conexionesEventos()
 
-	def actualizar():
+	def actualizar(self):
 		self.cargarDatosArea()
+		self.txtBuscar.clear()
 
 	def inicializar(self):
-		self.__valorNombre = ''
-		self.__valorPaterno = ''
-		self.__valorMaterno = ''
+		self.__valorBuscador = ''
+
+	def cambioBuscador(self, nuevoTexto):
+		self.__valorBuscador = nuevoTexto
+		self.actualizarTabla()
 	
 	def conexionesEventos(self):
 		self.btnOk.clicked[bool].connect(self.ok)
 		self.listaR.cellClicked.connect(self.presionoUnaCelda)
 		self.listaR.itemChanged.connect(self.cambioValorCelda)
-		self.txtNombre.textChanged.connect(self.cambioNombre)
-		self.txtPaterno.textChanged.connect(self.cambioPaterno)
-		self.txtMaterno.textChanged.connect(self.cambioMaterno)
 		self.btnAgregar.clicked[bool].connect(self.agregar)
-		self.btnBuscar.clicked[bool].connect(self.buscar)
-		self.btnDeshacer.clicked[bool].connect(self.deshacer)
 		self.btnEliminar.clicked[bool].connect(self.eliminar)
-		self.comboArea.currentIndexChanged.connect(self.cambioComboArea)
-
-	def cambioComboArea(self):
-		self.actualizarTabla()
-
-	def cambioNombre(self, nuevoTexto):
-		self.__valorNombre = nuevoTexto
-		self.actualizarTabla()
-
-	def cambioPaterno(self, nuevoTexto):
-		self.__valorPaterno = nuevoTexto
-		self.actualizarTabla()
-
-	def cambioMaterno(self, nuevoTexto):
-		self.__valorMaterno = nuevoTexto
-		self.actualizarTabla()
+		self.txtBuscar.textChanged.connect(self.cambioBuscador)
 	
 	def obtenerDatosXColumna(self, columna='', tabla=''):
 		if tabla==CONSTANTES.ortodoncistaBD:
@@ -189,7 +152,7 @@ class Ortodoncista(QtGui.QWidget):
 		return item
 
 	def noEditable(self, item):
-		item.setFlags(QtCore.Qt.ItemIsEnabled)
+		item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable) 
 		return item
 
 	def cargarDatos(self, datos):
@@ -204,15 +167,13 @@ class Ortodoncista(QtGui.QWidget):
 			self.numeroAnteriorFilas += 1
 
 	def cargarDatosArea(self):
-		self.comboArea.clear()
-		self.comboNewArea.clear()
-		self.comboArea.addItem(self.__txtDefaultArea)
-		self.comboNewArea.addItem(self.__txtDefaultArea)
+		self.comboNuevoArea.clear()
+		self.comboNuevoArea.addItem(self.__txtDefaultArea)
+		
 		datos = self.obtenerDatosXColumna(columna='area', tabla='area')
 		for i in datos:
 			i = i[0]
-			self.comboArea.addItem(i)
-			self.comboNewArea.addItem(i)
+			self.comboNuevoArea.addItem(i)
 
 	def generarId(self, nuevoNombre, nuevoPaterno, nuevoMaterno):
 		lp = self.recorte(ord(nuevoNombre[0]))
@@ -245,31 +206,36 @@ class Ortodoncista(QtGui.QWidget):
 			return False
 
 	def ok(self):
-		nuevoNombre = self.txtNewNombre.text()
-		nuevoPaterno = self.txtNewPaterno.text()
-		nuevoMaterno = self.txtNewMaterno.text()
-		nuevoTelefono = self.txtNewTelefono.text()
-		area = self.comboNewArea.currentText()
+		if self.validarCampo(self.txtNuevoNombre.text()) and\
+		 self.validarCampo(self.txtNuevoPaterno.text()) and\
+		 self.validarCampo(self.txtNuevoMaterno.text()) and\
+		 self.validarCampo(self.txtNuevoTelefono.text()) and\
+		 self.comboNuevoArea.currentText()!=self.__txtDefaultArea:
 
-		# pegarle a la base de datos
-		if len(nuevoNombre)!=0 and len(nuevoPaterno)!=0\
-			 and len(nuevoMaterno)!=0 and area!=self.__txtDefaultArea:
-			if self.validarDato(nuevoTelefono):
-				self.agregarRegistro(
-						nuevoNombre,
-						nuevoPaterno,
-						nuevoMaterno,
-						nuevoTelefono,
-						area
-					)
-				self.actualizarTabla()
-				self.limpiarCampos(posicion="abajo")
-			else:
-				QtGui.QMessageBox.information(self, "Aviso",
-						"El campo 'telefono' no tiene formato valido")
+			nuevoNombre = self.txtNuevoNombre.text()
+			nuevoPaterno = self.txtNuevoPaterno.text()
+			nuevoMaterno = self.txtNuevoMaterno.text()
+			area = self.comboNuevoArea.currentText()
+			nuevoTelefono = self.txtNuevoTelefono.text()
+
+			nuevoTelefono = self.util.eliminarPrimerCaracter(nuevoTelefono)
+
+			self.agregarRegistro(
+					nuevoNombre,
+					nuevoPaterno,
+					nuevoMaterno,
+					nuevoTelefono,
+					area
+				)
+			QtGui.QMessageBox.information(self, 'Information', 'Movimiento guardado.')
+			self.actualizarTabla()
+			self.limpiarCampos()
+
 		else:
-			QtGui.QMessageBox.information(self, "Aviso",
-								      "Llene todos los campos.")
+			MENSAJE ='No se pudo completar la operacion.\n1.- Asegurese de tener todos los campos llenos.'
+			QtGui.QMessageBox.critical(self, 'CRITICAL ERROR', MENSAJE, 
+				QtGui.QMessageBox.Abort)
+
 
 	def ejecutarQuery(self, query):
 		re = OrtodoncistaBD(self.__arr_conexion)
@@ -278,53 +244,22 @@ class Ortodoncista(QtGui.QWidget):
 
 	def armarQuery(self):
 		inicio = 'SELECT * FROM '+CONSTANTES.ortodoncistaBD
-		coma = False
 		self.query = inicio
 
-		# if len(self.__valorId)==0:
-		# 	self.query = inicio
-		# else:    
-		# 	self.query += ' WHERE '+CONSTANTES.columna1_PA+ ' LIKE "%'+self.__valorId+'%"'+' ORDER BY '+CONSTANTES.columna1_PA
-		# 	coma = True
-
-		if len(self.__valorNombre)==0:
+		if len(self.__valorBuscador)==0:
 			self.query = inicio
-		else:
-			self.query += ' WHERE '+CONSTANTES.columna2_PA+ ' LIKE "%'+self.__valorNombre+'%"'
-			coma = True
+		else:    
+			self.query += ' WHERE '+CONSTANTES.columna2_PA+ ' LIKE "%'+self.__valorBuscador+'%"'+\
+					' OR '+CONSTANTES.columna3_PA+ ' LIKE "%'+self.__valorBuscador+'%"'+\
+					' OR '+CONSTANTES.columna4_PA+ ' LIKE "%'+self.__valorBuscador+'%"'+\
+					' OR '+CONSTANTES.columna5_PA+ ' LIKE "%'+self.__valorBuscador+'%"'
 
-		if len(self.__valorPaterno)!=0:
-			if coma:
-				self.query += ' AND '+CONSTANTES.columna3_PA+' LIKE "%'+self.__valorPaterno+'%"'
-			else:    
-				self.query += ' WHERE '+CONSTANTES.columna3_PA+ ' LIKE "%'+self.__valorPaterno+'%"'
-				coma = True
-
-		if len(self.__valorMaterno)!=0:
-			if coma:
-				self.query += ' AND '+CONSTANTES.columna4_PA+' LIKE "%'+self.__valorMaterno+'%"'
-			else:    
-				self.query += ' WHERE '+CONSTANTES.columna4_PA+ ' LIKE "%'+self.__valorMaterno+'%"'
-				coma = True
-
-		if self.comboArea.currentText()!=self.__txtDefaultArea:
-			if coma:
-				self.query += ' AND '+CONSTANTES.columna5_PA+' LIKE "%'+self.comboArea.currentText()+'%"'
-			else:    
-				self.query += ' WHERE '+CONSTANTES.columna5_PA+ ' LIKE "%'+self.comboArea.currentText()+'%"'
-				coma = True
-
-	def limpiarCampos(self, posicion="arriba"):
-		if posicion=="arriba":
-			self.txtNombre.clear()
-			self.txtPaterno.clear()
-			self.txtMaterno.clear()
-		else:
-			self.txtNewNombre.clear()
-			self.txtNewPaterno.clear()
-			self.txtNewMaterno.clear()
-			self.txtNewTelefono.clear()
-			self.comboNewArea.setCurrentIndex(0)
+	def limpiarCampos(self):
+		self.txtNuevoNombre.clear()
+		self.txtNuevoPaterno.clear()
+		self.txtNuevoMaterno.clear()
+		self.txtNuevoTelefono.clear()
+		self.comboNuevoArea.setCurrentIndex(0)
 
 	def removerDatos(self):
 		self.listaR.clear()
@@ -337,11 +272,9 @@ class Ortodoncista(QtGui.QWidget):
 
 	def actualizarTabla(self):
 		self.armarQuery()
-		print 'DEBUG:', self.query		
+		# print 'DEBUG:', self.query		
 		# actualizamos la tabla
 		lista = self.ejecutarQuery(self.query)
-		print lista
-		print '-.-.-.-.-.'
 		# remover datos y actualizar
 		self.removerDatos()
 		self.removerFilas()
@@ -354,13 +287,28 @@ class Ortodoncista(QtGui.QWidget):
 		
 		columnasTipoNumero = [3]
 
-
-		# try: # es para no marcar error cuando se elimina/agrega un registro
-		valorCeldaClickeada = self.listaR.item(f,c).text()
-		if self.__valorOriginalTxt!=valorCeldaClickeada:
-			# validar que sea una modificacion valida
-			if c in columnasTipoNumero:
-				if self.validarDato(valorCeldaClickeada):
+		try: # es para no marcar error cuando se elimina/agrega un registro
+			valorCeldaClickeada = self.listaR.item(f,c).text()
+			if self.__valorOriginalTxt!=valorCeldaClickeada:
+				# validar que sea una modificacion valida
+				if c in columnasTipoNumero:
+					if self.validarDato(valorCeldaClickeada):
+						lista = list()
+						for l in range(self.__columnas):
+							if l!=c:
+								lista.append(self.listaR.item(f, l).text())
+							else:
+								lista.append(self.__valorOriginalTxt)
+						self.actualizarRegistro(lista, c, valorCeldaClickeada)
+						# self.ctrlZ.append([f, c, self.__valorOriginalTxt, valorCeldaClickeada])
+					else:
+						QtGui.QMessageBox.information(self, 'Information',\
+									 'No se hizo la modificacion. Dato invalido.')
+						# regresar al valor que tenia
+						it = QtGui.QTableWidgetItem()
+						it.setText(self.__valorOriginalTxt)
+						self.listaR.setItem(f, c, it)
+				else:
 					lista = list()
 					for l in range(self.__columnas):
 						if l!=c:
@@ -368,25 +316,9 @@ class Ortodoncista(QtGui.QWidget):
 						else:
 							lista.append(self.__valorOriginalTxt)
 					self.actualizarRegistro(lista, c, valorCeldaClickeada)
-					self.ctrlZ.append([f, c, self.__valorOriginalTxt, valorCeldaClickeada])
-				else:
-					QtGui.QMessageBox.information(self, 'Information',\
-								 'No se hizo la modificacion. Dato invalido.')
-					# regresar al valor que tenia
-					it = QtGui.QTableWidgetItem()
-					it.setText(self.__valorOriginalTxt)
-					self.listaR.setItem(f, c, it)
-			else:
-				lista = list()
-				for l in range(self.__columnas):
-					if l!=c:
-						lista.append(self.listaR.item(f, l).text())
-					else:
-						lista.append(self.__valorOriginalTxt)
-				self.actualizarRegistro(lista, c, valorCeldaClickeada)
-				self.ctrlZ.append([f, c, self.__valorOriginalTxt, valorCeldaClickeada])
-		# except:
-		# 	pass
+					# self.ctrlZ.append([f, c, self.__valorOriginalTxt, valorCeldaClickeada])
+		except:
+			pass
 
 	def agregarRegistro(self, *lista):
 		herr = OrtodoncistaBD(self.__arr_conexion)
@@ -398,7 +330,6 @@ class Ortodoncista(QtGui.QWidget):
 		herr.agregar()
 
 	def eliminarRegistro(self, lista):
-		print lista
 		herr = OrtodoncistaBD(self.__arr_conexion)
 		herr.nombre = lista[0]
 		herr.apPaterno = lista[1]
@@ -436,35 +367,8 @@ class Ortodoncista(QtGui.QWidget):
 			self.estado = False
 			self.btnAgregar.setStyleSheet('QPushButton {color: black}')
 			self.btnAgregar.setText('Agregar ortodoncista')
-			self.limpiarCampos(posicion="abajo")
+			self.limpiarCampos()
 		self.widgetAgregar.setVisible(self.estado)
-
-	def buscar(self):
-		if not self.estadoBuscar:
-			self.estadoBuscar = True
-			self.btnBuscar.setStyleSheet('QPushButton {color: red}')
-			self.btnBuscar.setText('Ocultar busqueda')
-		else:
-			self.estadoBuscar = False
-			self.btnBuscar.setStyleSheet('QPushButton {color: black}')
-			self.btnBuscar.setText('Buscar ortodoncista')
-			self.limpiarCampos(posicion="arriba")
-		self.widgetBuscar.setVisible(self.estadoBuscar)
-
-	def deshacer(self):
-		# hacer un update del ultimo elemento de la lista
-		if self.ctrlZ:
-			ultimoMov = self.ctrlZ.pop(-1) # eliminamos el ultimo valor
-			lista = list()
-			for l in range(self.__columnas):
-				if l!=ultimoMov[1]:
-					lista.append(self.listaR.item(ultimoMov[0], l).text())
-				else:
-					lista.append(ultimoMov[3])
-			self.actualizarRegistro(lista, ultimoMov[1], ultimoMov[2])
-			self.actualizarTabla()
-		else:
-			QtGui.QMessageBox.information(self, 'Information', 'Ya no hay cambios que deshacer.')
 
 	def eliminar(self):
 		try: # validar que halla seleccionado una celda
@@ -484,6 +388,11 @@ class Ortodoncista(QtGui.QWidget):
 			MENSAJE ='No se pudo completar la operacion.\n1.- Asegurese de haber seleccionado un Ortodoncista en la tabla.'
 			QtGui.QMessageBox.critical(self, 'CRITICAL ERROR', MENSAJE, QtGui.QMessageBox.Abort)
 
+	def validarCampo(self, campo):
+		if len(campo)!=0:
+			return True
+		return False
+
 
 
 	@property
@@ -491,36 +400,20 @@ class Ortodoncista(QtGui.QWidget):
 		return self._listaR	
 
 	@property
-	def txtNombre(self):
-		return self._txtNombre
+	def txtNuevoNombre(self):
+		return self._txtNuevoNombre
 
 	@property
-	def txtPaterno(self):
-		return self._txtPaterno
+	def txtNuevoPaterno(self):
+		return self._txtNuevoPaterno
 
 	@property
-	def txtMaterno(self):
-		return self._txtMaterno
+	def txtNuevoMaterno(self):
+		return self._txtNuevoMaterno
 
 	@property
-	def txtNewNombre(self):
-		return self._txtNewNombre
-
-	@property
-	def txtNewPaterno(self):
-		return self._txtNewPaterno
-
-	@property
-	def txtNewMaterno(self):
-		return self._txtNewMaterno
-
-	@property
-	def txtNewTelefono(self):
-		return self._txtNewTelefono
-
-	@property
-	def btnDeshacer(self):
-		return self._btnDeshacer
+	def txtNuevoTelefono(self):
+		return self._txtNuevoTelefono
 
 	@property
 	def btnAgregar(self):
@@ -539,20 +432,14 @@ class Ortodoncista(QtGui.QWidget):
 		return self._widgetAgregar
 
 	@property
-	def widgetBuscar(self):
-		return self._widgetBuscar
+	def comboNuevoArea(self):
+		return self._comboNuevoArea
 
 	@property
-	def btnBuscar(self):
-		return self._btnBuscar
+	def txtBuscar(self):
+		return self._txtBuscar
 
-	@property
-	def comboArea(self):
-		return self._comboArea
-
-	@property
-	def comboNewArea(self):
-		return self._comboNewArea
+	
 
 	
 
