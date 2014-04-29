@@ -200,7 +200,7 @@ class Paciente(QtGui.QWidget):
 						# self.ctrlZ.append([f, c, self.__valorOriginalTxt, valorCeldaClickeada])
 					else:
 						QtGui.QMessageBox.information(self, 'Information',\
-									 'No se hizo la modificacion. Dato invalido.')
+									 'No se hizo la modificacion. Esta columna solo acepta datos numericos.')
 						# regresar al valor que tenia
 						it = QtGui.QTableWidgetItem()
 						it.setText(self.__valorOriginalTxt)
