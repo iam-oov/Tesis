@@ -65,7 +65,8 @@ class Botones(QtGui.QWidget):
 
 		self._btnOkAgregar = QtGui.QPushButton('Aceptar', self)
 
-		# CONTENEDORES ########################
+		
+
 		botonesFijos = QtGui.QVBoxLayout() 
 		botonesFijos.addWidget(self.btnCargarImagen)
 		botonesFijos.addStretch(1)

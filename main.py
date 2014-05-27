@@ -133,6 +133,41 @@ class MainWindow(QtGui.QMainWindow):
 		self.desplazamientoArea = QtGui.QScrollArea()
 		self.desplazamientoArea.setBackgroundRole(QtGui.QPalette.Dark)
 		self.desplazamientoArea.setWidget(self.contenedorImagen)
+
+		lblSna = QtGui.QLabel('SNA:')
+		self.txtSna = QtGui.QLabel('ANB:')
+
+		lblSnb = QtGui.QLabel('SNB:')
+		self.txtSnb = QtGui.QLabel('SND:')
+
+		lblAnb = QtGui.QLabel('82')
+		self.txtAnb = QtGui.QLabel('82')
+
+		lblSnd = QtGui.QLabel('82')
+		self.txtSnd = QtGui.QLabel('82')
+
+		# CONTENEDORES ########################
+		resultadosLayout = QtGui.QVBoxLayout()
+		resultadosLayout.addWidget(lblSna)
+		resultadosLayout.addWidget(self.txtSna)
+		resultadosLayout.addWidget(lblSnb)
+		resultadosLayout.addWidget(self.txtSnb)
+
+		resultadosLayout2 = QtGui.QVBoxLayout()
+		resultadosLayout2.addWidget(lblAnb)
+		resultadosLayout2.addWidget(self.txtAnb)
+		resultadosLayout2.addWidget(lblSnd)
+		resultadosLayout2.addWidget(self.txtSnd)
+
+		unionResultados = QtGui.QHBoxLayout()
+		unionResultados.addLayout(resultadosLayout)
+		unionResultados.addLayout(resultadosLayout2)
+
+		self.resultadosGroup = QtGui.QGroupBox('Resultados')
+		self.resultadosGroup.setLayout(unionResultados)
+		self.__estadoAgregar = True
+		self.resultadosGroup.setVisible(self.__estadoAgregar)
+
  		
 		# self.scene = AreaDibujo()
 		# self.scene.setSceneRect(QtCore.QRectF(0, 0, 300, 300))
@@ -247,7 +282,8 @@ class MainWindow(QtGui.QMainWindow):
 		divisor = QtGui.QSplitter(QtCore.Qt.Horizontal)
 		divisor.addWidget(self.bot.wig)
 		divisor.addWidget(self.desplazamientoArea)
-		divisor.setSizes([200, 500])
+		divisor.addWidget(self.resultadosGroup)
+		# divisor.setSizes([200, 500])
 		# divisor.addWidget(self.view)
 
 		divisor2 = QtGui.QSplitter(QtCore.Qt.Horizontal)
