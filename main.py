@@ -148,7 +148,7 @@ class MainWindow(QtGui.QMainWindow):
 		self.conexionesEventos()
 
 		self.setCentralWidget(self.pestania)
-		self.setWindowTitle('Tesis v1.0')
+		self.setWindowTitle('Mediciones dentales')
 
 	def abrir(self):
 		self.bot.abrir()

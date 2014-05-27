@@ -41,10 +41,10 @@ class Botones(QtGui.QWidget):
 		# acciones secundarias del boton '_btnAgregarCasoAPaciente'
 		lblO = QtGui.QLabel('o')
 
-		lblIdAgregar = QtGui.QLabel('Id: ')
+		lblIdAgregar = QtGui.QLabel('ID: ')
 		self._txtId = QtGui.QLineEdit(self) 
 
-		lblIdAgregarCopia = QtGui.QLabel('Id: ')
+		lblIdAgregarCopia = QtGui.QLabel('ID: ')
 		self._txtIdCopia = QtGui.QLineEdit(self) 
 
 		self._comboNombre = QtGui.QComboBox(self)
